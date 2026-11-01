@@ -3,10 +3,10 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { guardarImagen } from '../common/imagenes.js';
+import { BASE_URL } from '../configuracion.js';
 import { UsuarioDocument } from '../usuarios/schemas/usuario.schema.js';
 import { UsuariosService } from '../usuarios/usuarios.service.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -17,7 +17,6 @@ import { PayloadJwt } from './payload-jwt.js';
 export class AuthService {
   constructor(
     private readonly usuariosService: UsuariosService,
-    private readonly config: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -30,11 +29,7 @@ export class AuthService {
     }
 
     const imagenPerfil = imagen
-      ? await guardarImagen(
-          imagen,
-          'perfiles',
-          this.config.getOrThrow<string>('BASE_URL'),
-        )
+      ? await guardarImagen(imagen, 'perfiles', BASE_URL)
       : null;
 
     const usuario = await this.usuariosService.crear({

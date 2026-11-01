@@ -4,11 +4,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, PipelineStage, Types } from 'mongoose';
 import { PayloadJwt } from '../auth/payload-jwt.js';
 import { guardarImagen } from '../common/imagenes.js';
+import { BASE_URL } from '../configuracion.js';
 import { Perfil } from '../usuarios/schemas/usuario.schema.js';
 import { CrearPublicacionDto } from './dto/crear-publicacion.dto.js';
 import { ListarPublicacionesDto } from './dto/listar-publicaciones.dto.js';
@@ -27,7 +27,6 @@ export class PublicacionesService {
   constructor(
     @InjectModel(Publicacion.name)
     private readonly publicacionModel: Model<Publicacion>,
-    private readonly config: ConfigService,
   ) {}
 
   async listar(filtro: ListarPublicacionesDto, usuarioId: string) {
@@ -83,7 +82,7 @@ export class PublicacionesService {
       ? await guardarImagen(
           imagen,
           'publicaciones',
-          this.config.getOrThrow<string>('BASE_URL'),
+          BASE_URL,
         )
       : null;
     const publicacion = await this.publicacionModel.create({

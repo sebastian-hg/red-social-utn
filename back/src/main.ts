@@ -1,17 +1,19 @@
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import cookieParser from 'cookie-parser';
 import { join } from 'node:path';
 import { AppModule } from './app.module.js';
+import { CORS_ORIGIN, PORT } from './configuracion.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const config = app.get(ConfigService);
 
   app.setGlobalPrefix('api');
+  app.use(cookieParser());
   app.enableCors({
-    origin: config.get<string>('CORS_ORIGIN')?.split(',') ?? true,
+    origin: CORS_ORIGIN.split(','),
+    credentials: true,
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -22,6 +24,6 @@ async function bootstrap() {
   );
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads/' });
 
-  await app.listen(config.get<number>('PORT') ?? 3000);
+  await app.listen(PORT);
 }
 await bootstrap();

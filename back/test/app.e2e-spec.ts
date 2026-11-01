@@ -4,6 +4,13 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from './../src/app.module.js';
 
+const tokenDeRespuesta = (respuesta: { headers: Record<string, string | string[]> }): string => {
+  const encabezados = respuesta.headers['set-cookie'];
+  const cookies = Array.isArray(encabezados) ? encabezados : [encabezados];
+  const arena = cookies.find((cookie) => cookie?.startsWith('arena_token='));
+  return decodeURIComponent(arena?.split(';')[0].slice('arena_token='.length) ?? '');
+};
+
 // Requiere MONGO_URI apuntando a una base de pruebas (usar MONGO_DB distinto de UTN).
 describe('Auth (e2e)', () => {
   let app: INestApplication<App>;
@@ -84,7 +91,7 @@ describe('Auth (e2e)', () => {
       const login = await http()
         .post('/api/auth/login')
         .send({ usuario: usuario.correo, password: usuario.password });
-      token = login.body.token;
+      token = tokenDeRespuesta(login);
       const otro = await http()
         .post('/api/auth/registro')
         .send({
@@ -92,7 +99,7 @@ describe('Auth (e2e)', () => {
           correo: `otro${sufijo}@mail.com`,
           nombreUsuario: `otro${sufijo}`,
         });
-      otroToken = otro.body.token;
+      otroToken = tokenDeRespuesta(otro);
     });
 
     it('autorizar: 401 sin token o con token inválido, 200 con token válido', async () => {
@@ -113,8 +120,9 @@ describe('Auth (e2e)', () => {
         .post('/api/auth/refrescar')
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
+      const nuevoToken = tokenDeRespuesta(res);
       const payload = JSON.parse(
-        Buffer.from(res.body.token.split('.')[1], 'base64url').toString(),
+        Buffer.from(nuevoToken.split('.')[1], 'base64url').toString(),
       );
       expect(payload.exp - payload.iat).toBe(15 * 60);
       expect(payload.perfil).toBe('usuario');

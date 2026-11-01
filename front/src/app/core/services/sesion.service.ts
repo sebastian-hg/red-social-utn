@@ -7,10 +7,6 @@ import { ModalService } from './modal.service';
 const AVISO_ANTES_DE_VENCER = 5 * 60 * 1000;
 const DURACION_MINIMA_CARGA = 800;
 
-/**
- * Ciclo de vida de la sesión: valida el token al iniciar la app y, mientras haya
- * sesión, avisa 5 minutos antes del vencimiento para ofrecer extenderla.
- */
 @Injectable({ providedIn: 'root' })
 export class SesionService {
   private readonly auth = inject(AuthService);
@@ -18,36 +14,29 @@ export class SesionService {
   private readonly router = inject(Router);
 
   private temporizadores: ReturnType<typeof setTimeout>[] = [];
-
-  /** false mientras se muestra la pantalla de carga inicial. */
   readonly lista = signal(false);
-  /** Se resuelve cuando terminó la validación inicial del token (lo esperan los guards). */
   readonly inicio = this.iniciar();
 
   constructor() {
-    // Cada token nuevo (login, registro o refresco) reprograma el aviso de vencimiento.
     effect(() => {
-      this.auth.token();
+      this.auth.vencimientoSesion();
       this.programar();
     });
   }
 
-  /** Cierra la sesión y manda al login avisando el motivo. */
   expirar(mensaje = 'Por seguridad, volvé a iniciar sesión para continuar.'): void {
-    if (!this.auth.token()) return;
-    this.auth.logout();
+    if (!this.auth.logueado()) return;
+    this.auth.logout().subscribe();
     this.router.navigate(['/login']);
     this.modal.abrir({ tipo: 'info', titulo: 'Tu sesión expiró', mensaje });
   }
 
   private async iniciar(): Promise<void> {
     const espera = new Promise((resolver) => setTimeout(resolver, DURACION_MINIMA_CARGA));
-    if (this.auth.token()) {
-      try {
-        await firstValueFrom(this.auth.autorizar());
-      } catch {
-        this.auth.logout();
-      }
+    try {
+      await firstValueFrom(this.auth.autorizar());
+    } catch {
+      this.auth.logout().subscribe();
     }
     await espera;
     this.lista.set(true);
@@ -57,7 +46,7 @@ export class SesionService {
     this.temporizadores.forEach(clearTimeout);
     this.temporizadores = [];
     const vence = this.auth.vencimiento();
-    if (!vence) return;
+    if (!vence || !this.auth.logueado()) return;
 
     const restante = vence - Date.now();
     this.temporizadores.push(
@@ -75,7 +64,7 @@ export class SesionService {
       textoAceptar: 'Extender sesión',
       textoCancelar: 'Ahora no',
     });
-    if (!extender || !this.auth.token()) return;
+    if (!extender || !this.auth.logueado()) return;
     this.auth.refrescar().subscribe(() =>
       this.modal.abrir({
         tipo: 'exito',

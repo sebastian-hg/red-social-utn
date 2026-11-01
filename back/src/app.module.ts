@@ -1,17 +1,13 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module.js';
+import { MONGO_DB, MONGO_URI } from './configuracion.js';
 import { PublicacionesModule } from './publicaciones/publicaciones.module.js';
 import { UsuariosModule } from './usuarios/usuarios.module.js';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(
-      'mongodb+srv://sebastianhg479_db_user:IladbNpGBPEW318Z@sebastianutn.brcv7a1.mongodb.net/',
-      { dbName: 'UTN' },
-    ),
+    MongooseModule.forRoot(MONGO_URI, { dbName: MONGO_DB }),
     UsuariosModule,
     AuthModule,
     PublicacionesModule,
