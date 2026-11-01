@@ -14,7 +14,7 @@ import { DURACION_TOKEN } from './payload-jwt.js';
       global: true,
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.getOrThrow<string>('JWT_SECRET'),
+        secret: config.get<string>('JWT_SECRET') ?? 'arena-jwt-secret-desarrollo-2026',
         signOptions: { expiresIn: DURACION_TOKEN },
       }),
     }),
