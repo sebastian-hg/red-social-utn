@@ -25,10 +25,12 @@ export class SesionService {
   }
 
   expirar(mensaje = 'Por seguridad, volvé a iniciar sesión para continuar.'): void {
-    if (!this.auth.logueado()) return;
-    this.auth.logout().subscribe();
+    this.temporizadores.forEach(clearTimeout);
+    this.temporizadores = [];
+
     this.router.navigate(['/login']);
-    this.modal.abrir({ tipo: 'info', titulo: 'Tu sesión expiró', mensaje });
+    this.auth.logout().subscribe({ error: () => undefined });
+    void this.modal.abrir({ tipo: 'info', titulo: 'Tu sesión expiró', mensaje });
   }
 
   private async iniciar(): Promise<void> {
@@ -36,7 +38,7 @@ export class SesionService {
     try {
       await firstValueFrom(this.auth.autorizar());
     } catch {
-      this.auth.logout().subscribe();
+      this.expirar('Tu sesión venció. Volvé a iniciar sesión para continuar.');
     }
     await espera;
     this.lista.set(true);
