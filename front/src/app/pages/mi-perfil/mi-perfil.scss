@@ -1,0 +1,151 @@
+:host {
+  display: block;
+}
+
+.perfil {
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.portada {
+  height: 180px;
+  background:
+    repeating-linear-gradient(115deg, transparent 0 30px, rgb(255 255 255 / 0.06) 30px 32px),
+    linear-gradient(120deg, var(--orange), #ffb800 55%, var(--lime));
+}
+
+.cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  margin-top: -64px;
+}
+
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--lime);
+
+  &.admin {
+    color: #0b0f14;
+    background: var(--orange);
+    border-color: var(--orange);
+  }
+}
+
+.datos {
+  padding: 0.75rem 1.5rem 1.25rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+}
+
+.arroba {
+  margin: 0.1rem 0 0.85rem;
+  color: var(--muted);
+}
+
+.descripcion {
+  margin: 0 0 1rem;
+  line-height: 1.55;
+  white-space: pre-line;
+
+  &.vacia {
+    color: var(--muted);
+    font-style: italic;
+  }
+}
+
+.info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+
+.pestanas {
+  display: flex;
+  border-top: 1px solid var(--border);
+
+  span {
+    padding: 0.95rem 1.5rem;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .activa {
+    color: var(--text);
+    box-shadow: inset 0 -3px 0 var(--lime);
+  }
+}
+
+.estado-vacio app-icon {
+  color: var(--lime);
+}
+
+@media (max-width: 480px) {
+  .portada {
+    height: 130px;
+  }
+  .cabecera {
+    padding: 0 1rem;
+  }
+  .datos {
+    padding: 0.75rem 1rem 1.25rem;
+  }
+}
+
+.contador {
+  margin: 1rem 0 0;
+  color: var(--muted);
+
+  strong {
+    color: var(--text);
+  }
+}
+
+.cargando {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2.5rem;
+  color: var(--muted);
+}
+
+.publicacion {
+  margin-bottom: 1.5rem;
+}
+
+// La tarjeta y sus comentarios se ven como un solo bloque.
+.publicacion app-publicacion-card ::ng-deep .publicacion {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.comentarios {
+  padding: 1rem 1.25rem;
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}

@@ -1,0 +1,68 @@
+<header class="barra">
+  <a routerLink="/publicaciones" class="logo display">ARENA</a>
+
+  <nav class="nav-central">
+    <a routerLink="/publicaciones" routerLinkActive="activo" aria-label="Publicaciones">
+      <app-icon nombre="inicio" [tamano]="24" />
+    </a>
+    <a routerLink="/mi-perfil" routerLinkActive="activo" aria-label="Mi perfil">
+      <app-icon nombre="usuario" [tamano]="24" />
+    </a>
+  </nav>
+
+  <div class="acciones">
+    @if (usuario(); as u) {
+      <a routerLink="/mi-perfil" class="chip-usuario">
+        <app-avatar [imagen]="u.imagenPerfil" [nombre]="u.nombre + ' ' + u.apellido" [tamano]="34" />
+        <span>{{ u.nombre }}</span>
+      </a>
+      <button type="button" class="btn btn-ghost icono-btn" (click)="salir()" aria-label="Cerrar sesión">
+        <app-icon nombre="salir" [tamano]="18" />
+      </button>
+    } @else {
+      <a routerLink="/login" class="btn btn-ghost">Ingresar</a>
+      <a routerLink="/registro" class="btn btn-primary">Registrarse</a>
+    }
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="lateral izquierda">
+    <nav class="menu">
+      <a routerLink="/publicaciones" routerLinkActive="activo">
+        <app-icon nombre="inicio" /> Publicaciones
+      </a>
+      <a routerLink="/mi-perfil" routerLinkActive="activo">
+        <app-icon nombre="usuario" /> Mi perfil
+      </a>
+      @if (usuario()) {
+        <button type="button" (click)="salir()"><app-icon nombre="salir" /> Cerrar sesión</button>
+      }
+    </nav>
+  </aside>
+
+  <main class="contenido">
+    <router-outlet />
+  </main>
+
+  <aside class="lateral derecha">
+    <section class="card bloque">
+      <h3><app-icon nombre="trofeo" [tamano]="18" /> Deportes</h3>
+      <div class="deportes">
+        @for (deporte of deportes; track deporte.nombre) {
+          <span>{{ deporte.emoji }} {{ deporte.nombre }}</span>
+        }
+      </div>
+    </section>
+    <p class="pie">Arena © 2026 · La red social del deporte</p>
+  </aside>
+</div>
+
+<nav class="nav-movil">
+  <a routerLink="/publicaciones" routerLinkActive="activo" aria-label="Publicaciones">
+    <app-icon nombre="inicio" [tamano]="24" />
+  </a>
+  <a routerLink="/mi-perfil" routerLinkActive="activo" aria-label="Mi perfil">
+    <app-icon nombre="usuario" [tamano]="24" />
+  </a>
+</nav>

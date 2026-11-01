@@ -1,0 +1,55 @@
+@if (usuario(); as u) {
+  <section class="card composer">
+    @if (!abierto()) {
+      <div class="cerrado">
+        <app-avatar [imagen]="u.imagenPerfil" [nombre]="u.nombre + ' ' + u.apellido" [tamano]="44" />
+        <button type="button" class="disparador" (click)="abierto.set(true)">
+          ¿Qué entrenaste hoy, {{ u.nombre }}?
+        </button>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="publicar()" novalidate>
+        <div class="campo">
+          <input class="input titulo" formControlName="titulo" placeholder="Título de tu publicación"
+            maxlength="100" [class.invalido]="invalido('titulo')" aria-label="Título" />
+          @if (invalido('titulo')) {
+            <span class="error">El título es obligatorio.</span>
+          }
+        </div>
+        <div class="campo">
+          <textarea class="input" formControlName="mensaje" rows="3" maxlength="1000"
+            placeholder="Contá cómo te fue: el partido, la carrera, el entrenamiento..."
+            [class.invalido]="invalido('mensaje')" aria-label="Mensaje"></textarea>
+          @if (invalido('mensaje')) {
+            <span class="error">Escribí un mensaje.</span>
+          }
+        </div>
+
+        @if (vistaPrevia(); as src) {
+          <div class="vista-previa">
+            <img [src]="src" alt="Vista previa de la imagen" />
+            <button type="button" (click)="quitarImagen()" aria-label="Quitar imagen">
+              <app-icon nombre="cruz" [tamano]="16" />
+            </button>
+          </div>
+        }
+
+        <div class="acciones">
+          <label class="adjuntar" for="imagen-publicacion" title="Agregar imagen">
+            <app-icon nombre="imagen" [tamano]="20" /> Imagen
+          </label>
+          <input id="imagen-publicacion" type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+            (change)="elegirImagen($event)" hidden />
+          <span class="espacio"></span>
+          <button type="button" class="btn btn-ghost" (click)="cancelar()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="enviando()">
+            @if (enviando()) {
+              <span class="spinner"></span>
+            }
+            Publicar
+          </button>
+        </div>
+      </form>
+    }
+  </section>
+}

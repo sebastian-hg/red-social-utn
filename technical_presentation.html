@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arena · Presentación técnica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="front/public/favicon.svg">
+<style>
+  :root {
+    --bg: #0b0f14;
+    --surface: #121921;
+    --surface-2: #19222c;
+    --border: #23303d;
+    --text: #e8edf2;
+    --muted: #8b98a5;
+    --lime: #c6f432;
+    --orange: #ff6b2c;
+    --amber: #ffb800;
+    --danger: #ff4d5e;
+    --success: #2fd38a;
+    --gradient: linear-gradient(135deg, var(--orange) 0%, var(--amber) 50%, var(--lime) 100%);
+    --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --display: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body { overflow: hidden; }
+
+  /* ---------- Diapositivas ---------- */
+  .deck { position: relative; height: 100%; overflow: hidden; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1.25rem, 6vw, 5.5rem) 4.5rem;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(24px);
+    transition: opacity .35s ease, transform .35s ease, visibility .35s;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(255 107 44 / .08), transparent 40%),
+      radial-gradient(circle at 0% 100%, rgb(198 244 50 / .06), transparent 40%),
+      var(--bg);
+  }
+  .slide.activa { opacity: 1; visibility: visible; transform: none; }
+  .slide.previa { transform: translateX(-24px); }
+
+  .kicker {
+    font: 700 .78rem var(--font);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin: 0 0 .6rem;
+  }
+
+  h1, h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    letter-spacing: .02em;
+    line-height: .95;
+    margin: 0 0 1.4rem;
+  }
+  h2 { font-size: clamp(2.2rem, 4.6vw, 3.6rem); }
+  h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+
+  p { line-height: 1.6; }
+  .muted { color: var(--muted); }
+  .lead { font-size: clamp(1rem, 1.6vw, 1.2rem); color: var(--muted); max-width: 60ch; margin-top: 0; }
+  .grad {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .contenido { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+
+  /* ---------- Bloques ---------- */
+  .grid { display: grid; gap: 1rem; }
+  .g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.1rem 1.2rem;
+  }
+  .card p, .card li { color: var(--muted); font-size: .92rem; }
+  .card p { margin: 0; }
+  .card.acento { border-top: 3px solid var(--lime); }
+  .card.naranja { border-top: 3px solid var(--orange); }
+
+  ul.lista { margin: 0; padding-left: 1.1rem; line-height: 1.7; }
+  ul.lista li::marker { color: var(--lime); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: .45rem; }
+  .chip {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .32rem .7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    font-size: .8rem; font-weight: 600;
+  }
+  .chip.lime { color: var(--lime); }
+  .chip.naranja { color: var(--orange); }
+
+  code, pre { font-family: var(--mono); }
+  code.in {
+    font-size: .85em;
+    padding: .1em .4em;
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--lime);
+  }
+  pre {
+    margin: 0;
+    padding: 1rem 1.15rem;
+    border-radius: 14px;
+    background: #070a0e;
+    border: 1px solid var(--border);
+    font-size: clamp(.72rem, 1.05vw, .85rem);
+    line-height: 1.6;
+    overflow-x: auto;
+    color: #c9d4de;
+  }
+  .k { color: #ff8f5c; }   /* palabra clave / decorador */
+  .s { color: var(--lime); } /* string */
+  .c { color: #5d6b78; }   /* comentario */
+  .t { color: #7cc7ff; }   /* tipo */
+
+  .tabla-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: clamp(.72rem, 1.05vw, .86rem); }
+  th, td { padding: .5rem .8rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { background: var(--surface); color: var(--muted); font-weight: 600; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
+  tr:last-child td { border-bottom: none; }
+  td code { font-family: var(--mono); font-size: .95em; }
+  .m { font-family: var(--mono); font-weight: 600; font-size: .85em; }
+  .m.get { color: #7cc7ff; } .m.post { color: var(--lime); } .m.put { color: var(--amber); } .m.del { color: var(--danger); }
+  .st { display: inline-block; font-family: var(--mono); font-size: .8em; padding: .05em .4em; border-radius: 5px; margin-right: .2rem; background: var(--surface-2); }
+  .st.ok { color: var(--success); } .st.err { color: var(--danger); } .st.warn { color: var(--amber); }
+
+  .stat { text-align: center; padding: 1.4rem 1rem; }
+  .stat .num { font-family: var(--display); font-size: clamp(2.8rem, 6vw, 4.5rem); line-height: 1; }
+  .stat .lbl { color: var(--muted); font-size: .88rem; margin-top: .35rem; }
+
+  .diag { overflow-x: auto; }
+  .diagrama { width: 100%; height: auto; display: block; }
+  .diagrama text { font-family: var(--font); fill: var(--text); }
+  .diagrama .sub { fill: var(--muted); font-size: 12px; }
+  .diagrama .mono { font-family: var(--mono); font-size: 11.5px; fill: var(--muted); }
+
+  .swatch { display: flex; align-items: center; gap: .6rem; font-size: .85rem; }
+  .swatch i { width: 2rem; height: 2rem; border-radius: 10px; border: 1px solid var(--border); flex-shrink: 0; }
+  .swatch span { color: var(--muted); font-family: var(--mono); font-size: .78rem; }
+
+  .paso { display: flex; gap: .85rem; align-items: flex-start; }
+  .paso .n {
+    flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--gradient); color: var(--bg); font-weight: 800; font-size: .9rem;
+  }
+  .paso h3 { margin-bottom: .2rem; }
+  .paso p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+  .check li { list-style: none; position: relative; padding-left: 1.5rem; }
+  .check { padding-left: 0; margin: 0; line-height: 1.8; font-size: .92rem; color: var(--muted); }
+  .check li::before { content: '✓'; position: absolute; left: 0; color: var(--success); font-weight: 800; }
+
+  /* ---------- Portada ---------- */
+  .portada { justify-content: center; }
+  .portada h1 { font-size: clamp(5rem, 16vw, 12rem); margin: 0; }
+  .portada .tag { font-size: clamp(1.1rem, 2.4vw, 1.6rem); margin: .4rem 0 2rem; color: var(--muted); }
+  .portada .logo { width: clamp(64px, 9vw, 96px); margin-bottom: 1.2rem; }
+
+  /* ---------- Navegación ---------- */
+  .barra {
+    position: fixed; inset: auto 0 0 0; z-index: 10;
+    display: flex; align-items: center; gap: 1rem;
+    padding: .75rem clamp(1.25rem, 6vw, 5.5rem) calc(.75rem + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(to top, var(--bg) 60%, transparent);
+  }
+  .progreso { flex: 1; height: 3px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .progreso div { height: 100%; width: 0; background: var(--gradient); transition: width .35s ease; }
+  .contador { font: 600 .8rem var(--mono); color: var(--muted); min-width: 4.5rem; text-align: center; }
+  .barra button {
+    width: 2.4rem; height: 2.4rem; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); font-size: 1.1rem; cursor: pointer;
+  }
+  .barra button:hover:not(:disabled) { border-color: var(--lime); color: var(--lime); }
+  .barra button:disabled { opacity: .35; cursor: default; }
+  .ayuda-teclas { font-size: .75rem; color: var(--muted); }
+
+  @media (max-width: 900px) {
+    .g3, .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ayuda-teclas { display: none; }
+  }
+  @media (max-width: 600px) {
+    .g2, .g3, .g4 { grid-template-columns: minmax(0, 1fr); }
+    .contenido { justify-content: flex-start; }
+    .diagrama { min-width: 640px; }
+  }
+
+  @media print {
+    body { overflow: visible; }
+    .barra { display: none; }
+    .slide {
+      position: relative; opacity: 1; visibility: visible; transform: none;
+      min-height: 100vh; page-break-after: always; break-after: page; overflow: visible;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="deck" id="deck">
+
+  <!-- 1. Portada -->
+  <section class="slide portada" aria-label="Portada">
+    <div class="contenido">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b2c"/><stop offset="1" stop-color="#c6f432"/></linearGradient></defs>
+        <rect width="64" height="64" rx="16" fill="#0b0f14"/>
+        <rect x="3" y="3" width="58" height="58" rx="13" fill="none" stroke="url(#lg)" stroke-width="4"/>
+        <path d="M20 46 L32 16 L44 46" fill="none" stroke="#c6f432" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M25 36 H39" stroke="#ff6b2c" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+      <p class="kicker">Presentación técnica · Sprints 1 a 3</p>
+      <h1 class="grad">ARENA</h1>
+      <p class="tag">La red social del deporte</p>
+      <div class="chips">
+        <span class="chip lime">Angular 22</span>
+        <span class="chip lime">NestJS 12</span>
+        <span class="chip lime">MongoDB · Mongoose 9</span>
+        <span class="chip naranja">JWT</span>
+        <span class="chip">TypeScript 6</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Objetivo -->
+  <section class="slide" aria-label="Objetivo">
+    <p class="kicker">01 · Objetivo</p>
+    <h2>Qué construimos</h2>
+    <div class="contenido">
+      <p class="lead">Una red social para deportistas, con estética mezcla de Facebook, Instagram y X, dividida en un front Angular y un back NestJS propio sobre MongoDB.</p>
+      <div class="grid g3">
+        <div class="card acento"><h3>Usuarios</h3><p>Registro con foto de perfil, login por correo o nombre de usuario, rol <code class="in">usuario</code> / <code class="in">administrador</code>.</p></div>
+        <div class="card acento"><h3>Publicaciones</h3><p>Título, mensaje e imagen opcional. Feed paginado, orden por fecha o por me gusta, baja lógica.</p></div>
+        <div class="card acento"><h3>Interacción</h3><p>Me gusta (uno por usuario), comentarios paginados y editables por su autor.</p></div>
+        <div class="card naranja"><h3>Sesión segura</h3><p>JWT de 15 minutos, validación al iniciar, aviso para extender y redirección ante 401.</p></div>
+        <div class="card naranja"><h3>API correcta</h3><p>Status HTTP precisos: 201, 400, 401, 403, 404, 409. Nunca 200 en un error.</p></div>
+        <div class="card naranja"><h3>UX cuidada</h3><p>Diseño propio y uniforme, mensajes claros y modales en lugar de <code class="in">alert()</code>.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Arquitectura -->
+  <section class="slide" aria-label="Arquitectura">
+    <p class="kicker">02 · Arquitectura</p>
+    <h2>Tres capas, un contrato</h2>
+    <div class="contenido">
+      <div class="diag"><svg class="diagrama" viewBox="0 0 960 330" role="img" aria-label="Diagrama: el navegador con Angular habla por HTTP y JWT con la API NestJS, que usa MongoDB Atlas y guarda imágenes en disco">
+        <defs>
+          <marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#8b98a5"/></marker>
+        </defs>
+        <!-- Front -->
+        <rect x="10" y="40" width="260" height="250" rx="18" fill="#121921" stroke="#c6f432" stroke-width="1.5"/>
+        <text x="30" y="75" font-size="20" font-weight="800">Front · Angular</text>
+        <text x="30" y="98" class="sub">SPA standalone, signals, zoneless</text>
+        <text x="30" y="135" class="mono">Componentes / páginas</text>
+        <text x="30" y="158" class="mono">AuthService · SesionService</text>
+        <text x="30" y="181" class="mono">authInterceptor (Bearer, 401)</text>
+        <text x="30" y="204" class="mono">Guards de ruta</text>
+        <text x="30" y="227" class="mono">ModalService</text>
+        <text x="30" y="266" class="sub">localStorage: arena.token</text>
+        <!-- Flechas -->
+        <line x1="278" y1="140" x2="402" y2="140" stroke="#8b98a5" stroke-width="2" marker-end="url(#fl)"/>
+        <line x1="402" y1="190" x2="278" y2="190" stroke="#8b98a5" stroke-width="2" marker-end="url(#fl)"/>
+        <text x="340" y="128" text-anchor="middle" class="mono">HTTP + JWT</text>
+        <text x="340" y="212" text-anchor="middle" class="mono">JSON / status</text>
+        <!-- Back -->
+        <rect x="410" y="40" width="270" height="250" rx="18" fill="#121921" stroke="#ff6b2c" stroke-width="1.5"/>
+        <text x="430" y="75" font-size="20" font-weight="800">Back · NestJS</text>
+        <text x="430" y="98" class="sub">Prefijo /api · ESM</text>
+        <text x="430" y="135" class="mono">AuthModule (JWT global)</text>
+        <text x="430" y="158" class="mono">UsuariosModule</text>
+        <text x="430" y="181" class="mono">PublicacionesModule</text>
+        <text x="430" y="204" class="mono">  ├ publicaciones.controller</text>
+        <text x="430" y="227" class="mono">  └ comentarios.controller</text>
+        <text x="430" y="266" class="sub">ValidationPipe global · CORS</text>
+        <!-- DB -->
+        <line x1="688" y1="120" x2="752" y2="120" stroke="#8b98a5" stroke-width="2" marker-end="url(#fl)"/>
+        <text x="725" y="108" text-anchor="middle" class="mono">Mongoose</text>
+        <rect x="760" y="40" width="190" height="140" rx="18" fill="#121921" stroke="#2fd38a" stroke-width="1.5"/>
+        <text x="778" y="75" font-size="18" font-weight="800">MongoDB Atlas</text>
+        <text x="778" y="98" class="sub">base UTN</text>
+        <text x="778" y="128" class="mono">usuarios</text>
+        <text x="778" y="148" class="mono">publicaciones</text>
+        <text x="778" y="168" class="mono">comentarios</text>
+        <line x1="688" y1="245" x2="752" y2="245" stroke="#8b98a5" stroke-width="2" marker-end="url(#fl)"/>
+        <rect x="760" y="200" width="190" height="90" rx="18" fill="#121921" stroke="#23303d" stroke-width="1.5"/>
+        <text x="778" y="232" font-size="16" font-weight="800">uploads/</text>
+        <text x="778" y="254" class="mono">perfiles · publicaciones</text>
+        <text x="778" y="274" class="sub">servido en /uploads</text>
+      </svg></div>
+      <div class="chips" style="margin-top:1rem">
+        <span class="chip">back/ · NestJS</span><span class="chip">front/ · Angular</span><span class="chip">postman/ · colección</span><span class="chip">db/ · scripts JSON por sprint</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Backend: módulos y pipes -->
+  <section class="slide" aria-label="Backend">
+    <p class="kicker">03 · Backend</p>
+    <h2>NestJS: módulos y validación</h2>
+    <div class="contenido">
+      <div class="grid g2">
+        <div>
+          <pre><span class="c">// main.ts</span>
+app.<span class="t">setGlobalPrefix</span>(<span class="s">'api'</span>);
+app.<span class="t">enableCors</span>({ origin: CORS_ORIGIN.split(<span class="s">','</span>) });
+app.<span class="t">useGlobalPipes</span>(
+  <span class="k">new</span> <span class="t">ValidationPipe</span>({
+    whitelist: <span class="k">true</span>,            <span class="c">// descarta lo no declarado</span>
+    forbidNonWhitelisted: <span class="k">true</span>, <span class="c">// ...o responde 400</span>
+    transform: <span class="k">true</span>,            <span class="c">// query → DTO tipado</span>
+  }),
+);
+app.<span class="t">useStaticAssets</span>(<span class="s">'uploads'</span>, { prefix: <span class="s">'/uploads/'</span> });</pre>
+          <pre style="margin-top:.8rem"><span class="k">@Get</span>(<span class="s">':id'</span>)
+<span class="t">obtener</span>(
+  <span class="k">@Param</span>(<span class="s">'id'</span>, <span class="t">ParseObjectIdPipe</span>) id: <span class="t">Types.ObjectId</span>,
+  <span class="k">@UsuarioActual</span>() usuario: <span class="t">PayloadJwt</span>,
+) { ... }</pre>
+        </div>
+        <div class="grid" style="align-content:start">
+          <div class="card acento">
+            <h3>DTOs con class-validator</h3>
+            <p><code class="in">@IsEmail</code> · <code class="in">@Matches</code> (contraseña: 8+, mayúscula, número) · <code class="in">@MaxLength</code> · <code class="in">@IsDateString</code> · <code class="in">@IsMongoId</code> · <code class="in">@IsIn</code>. Mensajes en español.</p>
+          </div>
+          <div class="card acento">
+            <h3>Paginación tipada</h3>
+            <p><code class="in">@Type(() =&gt; Number)</code> + <code class="in">@IsInt</code> + <code class="in">@Min(0)</code> / <code class="in">@Min(1)</code> <code class="in">@Max(50)</code> con defaults <code class="in">offset=0</code>, <code class="in">limit=10</code>.</p>
+          </div>
+          <div class="card acento">
+            <h3>Imágenes</h3>
+            <p><code class="in">FileInterceptor</code> en memoria con filtro de tipo y 5 MB; se escriben a disco <em>después</em> de validar, así no quedan archivos huérfanos.</p>
+          </div>
+          <div class="card naranja">
+            <h3>Errores consistentes</h3>
+            <p>Excepciones de Nest (<code class="in">Conflict</code>, <code class="in">Forbidden</code>, <code class="in">NotFound</code>…) → cuerpo <code class="in">{ message, error, statusCode }</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Modelo de datos -->
+  <section class="slide" aria-label="Modelo de datos">
+    <p class="kicker">04 · Datos</p>
+    <h2>Modelo en MongoDB</h2>
+    <div class="contenido">
+      <div class="diag"><svg class="diagrama" viewBox="0 0 960 330" role="img" aria-label="Colecciones usuarios, publicaciones y comentarios con sus referencias">
+        <defs><marker id="fl2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#c6f432"/></marker></defs>
+        <rect x="10" y="20" width="280" height="290" rx="16" fill="#121921" stroke="#23303d"/>
+        <rect x="10" y="20" width="280" height="44" rx="16" fill="#19222c"/>
+        <text x="28" y="49" font-size="17" font-weight="800">usuarios</text>
+        <text x="28" y="90" class="mono">_id</text>
+        <text x="28" y="112" class="mono">nombre, apellido</text>
+        <text x="28" y="134" class="mono">correo        ★ único</text>
+        <text x="28" y="156" class="mono">nombreUsuario ★ único</text>
+        <text x="28" y="178" class="mono">password      (bcrypt, select:false)</text>
+        <text x="28" y="200" class="mono">fechaNacimiento, descripcion</text>
+        <text x="28" y="222" class="mono">imagenPerfil  (URL | null)</text>
+        <text x="28" y="244" class="mono">perfil  usuario | administrador</text>
+        <text x="28" y="266" class="mono">createdAt, updatedAt</text>
+
+        <rect x="340" y="20" width="280" height="290" rx="16" fill="#121921" stroke="#23303d"/>
+        <rect x="340" y="20" width="280" height="44" rx="16" fill="#19222c"/>
+        <text x="358" y="49" font-size="17" font-weight="800">publicaciones</text>
+        <text x="358" y="90" class="mono">_id</text>
+        <text x="358" y="112" class="mono">titulo, mensaje</text>
+        <text x="358" y="134" class="mono">imagen        (URL | null)</text>
+        <text x="358" y="156" class="mono">autor         → usuarios</text>
+        <text x="358" y="178" class="mono">meGusta[]     → usuarios</text>
+        <text x="358" y="200" class="mono">activa        (baja lógica)</text>
+        <text x="358" y="222" class="mono">createdAt, updatedAt</text>
+        <text x="358" y="258" class="sub">idx: activa+createdAt</text>
+        <text x="358" y="278" class="sub">idx: autor+activa+createdAt</text>
+
+        <rect x="670" y="20" width="280" height="290" rx="16" fill="#121921" stroke="#23303d"/>
+        <rect x="670" y="20" width="280" height="44" rx="16" fill="#19222c"/>
+        <text x="688" y="49" font-size="17" font-weight="800">comentarios</text>
+        <text x="688" y="90" class="mono">_id</text>
+        <text x="688" y="112" class="mono">publicacion   → publicaciones</text>
+        <text x="688" y="134" class="mono">autor         → usuarios</text>
+        <text x="688" y="156" class="mono">mensaje</text>
+        <text x="688" y="178" class="mono">modificado    (true si se editó)</text>
+        <text x="688" y="200" class="mono">createdAt, updatedAt</text>
+        <text x="688" y="258" class="sub">idx: publicacion+createdAt</text>
+
+        <path d="M340 152 C 315 152, 315 152, 296 152" stroke="#c6f432" stroke-width="2" fill="none" marker-end="url(#fl2)"/>
+        <path d="M670 108 C 645 108, 645 108, 626 108" stroke="#c6f432" stroke-width="2" fill="none" marker-end="url(#fl2)"/>
+      </svg></div>
+      <p class="muted" style="margin-bottom:0">Los me gusta viven dentro de la publicación: un <code class="in">$push</code> condicionado a <code class="in">meGusta: { $ne: uid }</code> garantiza uno por usuario de forma atómica. Los comentarios van en su colección porque crecen sin límite y se paginan.</p>
+    </div>
+  </section>
+
+  <!-- 6. Endpoints -->
+  <section class="slide" aria-label="Endpoints">
+    <p class="kicker">05 · API</p>
+    <h2>Endpoints y status</h2>
+    <div class="contenido">
+      <div class="tabla-wrap">
+        <table>
+          <thead><tr><th>Método</th><th>Ruta</th><th>Qué hace</th><th>Respuestas</th></tr></thead>
+          <tbody>
+            <tr><td class="m post">POST</td><td><code>/auth/registro</code></td><td>multipart, foto opcional → usuario + token</td><td><span class="st ok">201</span><span class="st err">400</span><span class="st warn">409</span></td></tr>
+            <tr><td class="m post">POST</td><td><code>/auth/login</code></td><td>correo o usuario + contraseña</td><td><span class="st ok">200</span><span class="st err">400</span><span class="st err">401</span></td></tr>
+            <tr><td class="m post">POST</td><td><code>/auth/autorizar</code></td><td>valida token, devuelve el usuario</td><td><span class="st ok">200</span><span class="st err">401</span></td></tr>
+            <tr><td class="m post">POST</td><td><code>/auth/refrescar</code></td><td>token nuevo, mismo payload, +15 min</td><td><span class="st ok">200</span><span class="st err">401</span></td></tr>
+            <tr><td class="m get">GET</td><td><code>/publicaciones</code></td><td><code>orden</code>, <code>usuario</code>, <code>offset</code>, <code>limit</code></td><td><span class="st ok">200</span><span class="st err">400</span></td></tr>
+            <tr><td class="m get">GET</td><td><code>/publicaciones/:id</code></td><td>una publicación</td><td><span class="st ok">200</span><span class="st err">400</span><span class="st warn">404</span></td></tr>
+            <tr><td class="m post">POST</td><td><code>/publicaciones</code></td><td>título, mensaje, imagen opcional</td><td><span class="st ok">201</span><span class="st err">400</span></td></tr>
+            <tr><td class="m del">DELETE</td><td><code>/publicaciones/:id</code></td><td>baja lógica · autor o admin</td><td><span class="st ok">200</span><span class="st err">403</span><span class="st warn">404</span></td></tr>
+            <tr><td class="m post">POST</td><td><code>/publicaciones/:id/me-gusta</code></td><td>dar me gusta</td><td><span class="st ok">201</span><span class="st warn">404</span><span class="st warn">409</span></td></tr>
+            <tr><td class="m del">DELETE</td><td><code>/publicaciones/:id/me-gusta</code></td><td>quitar el propio</td><td><span class="st ok">200</span><span class="st warn">404</span><span class="st warn">409</span></td></tr>
+            <tr><td class="m get">GET</td><td><code>/publicaciones/:id/comentarios</code></td><td>paginado, recientes primero</td><td><span class="st ok">200</span><span class="st err">400</span><span class="st warn">404</span></td></tr>
+            <tr><td class="m post">POST</td><td><code>/publicaciones/:id/comentarios</code></td><td>comentar</td><td><span class="st ok">201</span><span class="st err">400</span><span class="st warn">404</span></td></tr>
+            <tr><td class="m put">PUT</td><td><code>/publicaciones/:id/comentarios/:cid</code></td><td>editar · solo autor · <code>modificado: true</code></td><td><span class="st ok">200</span><span class="st err">403</span><span class="st warn">404</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="margin:.8rem 0 0;font-size:.85rem">Todo bajo <code class="in">/api</code>. Salvo registro y login, todas las rutas exigen <code class="in">Authorization: Bearer &lt;token&gt;</code> → 401 si falta, es inválido o venció.</p>
+    </div>
+  </section>
+
+  <!-- 7. JWT -->
+  <section class="slide" aria-label="Autenticación JWT">
+    <p class="kicker">06 · Autenticación</p>
+    <h2>JWT de punta a punta</h2>
+    <div class="contenido">
+      <div class="grid g2">
+        <div class="grid" style="align-content:start">
+          <div class="paso"><span class="n">1</span><div><h3>Contraseña</h3><p>Se guarda con <code class="in">bcrypt.hash(pw, 10)</code>. En el login se compara con <code class="in">bcrypt.compare</code>; el hash nunca sale de la API (<code class="in">select: false</code> + <code class="in">toJSON</code>).</p></div></div>
+          <div class="paso"><span class="n">2</span><div><h3>Firma</h3><p><code class="in">JwtModule</code> global con <code class="in">JWT_SECRET</code> y <code class="in">expiresIn: '15m'</code>. Registro y login devuelven <code class="in">{ usuario, token }</code>.</p></div></div>
+          <div class="paso"><span class="n">3</span><div><h3>Guard</h3><p><code class="in">JwtAuthGuard</code> lee el Bearer, verifica firma y vencimiento, y deja el payload en la request para <code class="in">@UsuarioActual()</code>.</p></div></div>
+          <div class="paso"><span class="n">4</span><div><h3>Autorizar / refrescar</h3><p>Autorizar busca al usuario actual en la base; refrescar re-firma el mismo payload con 15 minutos nuevos.</p></div></div>
+        </div>
+        <div>
+          <pre><span class="c">// payload del token</span>
+{
+  <span class="s">"sub"</span>: <span class="s">"6adf9b4d94aac876..."</span>,   <span class="c">// _id</span>
+  <span class="s">"correo"</span>: <span class="s">"leo@mail.com"</span>,
+  <span class="s">"nombreUsuario"</span>: <span class="s">"leo10"</span>,
+  <span class="s">"perfil"</span>: <span class="s">"usuario"</span>,       <span class="c">// rol</span>
+  <span class="s">"iat"</span>: 1793044304,
+  <span class="s">"exp"</span>: 1793045204           <span class="c">// iat + 900 s</span>
+}</pre>
+          <pre style="margin-top:.8rem"><span class="c">// eliminar: autor o administrador</span>
+<span class="k">const</span> esAutor = publicacion.autor.<span class="t">equals</span>(usuario.sub);
+<span class="k">if</span> (!esAutor &amp;&amp; usuario.perfil !== Perfil.Administrador) {
+  <span class="k">throw new</span> <span class="t">ForbiddenException</span>(...);  <span class="c">// 403</span>
+}
+publicacion.activa = <span class="k">false</span>;           <span class="c">// baja lógica</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Consultas -->
+  <section class="slide" aria-label="Listado de publicaciones">
+    <p class="kicker">07 · Consultas</p>
+    <h2>Un listado, una agregación</h2>
+    <div class="contenido">
+      <div class="grid g2">
+        <pre><span class="k">this</span>.publicacionModel.<span class="t">aggregate</span>([
+  { $match: { activa: <span class="k">true</span>, autor? } },
+  { $addFields: { cantidadMeGusta: { $size: <span class="s">'$meGusta'</span> } } },
+  { $facet: {
+      total: [{ $count: <span class="s">'n'</span> }],
+      publicaciones: [
+        { $sort: orden },     <span class="c">// fecha | meGusta, desempate _id</span>
+        { $skip: offset },
+        { $limit: limit },
+        ...<span class="k">this</span>.<span class="t">vista</span>(usuarioId), <span class="c">// $lookup autor + conteo</span>
+      ],
+  } },
+]);</pre>
+        <div class="grid" style="align-content:start">
+          <div class="card acento"><h3>Orden por me gusta</h3><p>No se puede ordenar por el largo de un array con <code class="in">find()</code>: se calcula <code class="in">cantidadMeGusta</code> y se ordena sobre ese campo.</p></div>
+          <div class="card acento"><h3>Total + página en un viaje</h3><p><code class="in">$facet</code> devuelve el total para la paginación y la página pedida en la misma consulta.</p></div>
+          <div class="card acento"><h3>Respuesta lista para la UI</h3><p>Cada publicación trae autor (campos públicos), <code class="in">cantidadMeGusta</code>, <code class="in">meGustaYo</code> y <code class="in">cantidadComentarios</code>; el array de ids no se expone.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Frontend -->
+  <section class="slide" aria-label="Frontend">
+    <p class="kicker">08 · Frontend</p>
+    <h2>Angular moderno</h2>
+    <div class="contenido">
+      <div class="grid g4">
+        <div class="card acento"><h3>Standalone + signals</h3><p>Sin NgModules. Estado con <code class="in">signal</code>, <code class="in">computed</code> y <code class="in">linkedSignal</code>; detección <code class="in">OnPush</code> sin zone.js.</p></div>
+        <div class="card acento"><h3>Interceptor</h3><p><code class="in">authInterceptor</code> agrega el Bearer a cada request y ante un 401 cierra la sesión y lleva al login.</p></div>
+        <div class="card acento"><h3>Guards</h3><p><code class="in">autenticadoGuard</code> e <code class="in">invitadoGuard</code> esperan la validación inicial del token antes de decidir.</p></div>
+        <div class="card acento"><h3>ModalService</h3><p>Reemplaza <code class="in">alert</code>/<code class="in">confirm</code>: <code class="in">abrir()</code> devuelve una <code class="in">Promise&lt;boolean&gt;</code>.</p></div>
+      </div>
+      <div class="grid g2" style="margin-top:1rem">
+        <pre><span class="c">// app.routes.ts</span>
+{ path: <span class="s">'login'</span>,    canActivate: [invitadoGuard] },
+{ path: <span class="s">'registro'</span>, canActivate: [invitadoGuard] },
+{ path: <span class="s">''</span>, component: Shell, canActivate: [autenticadoGuard],
+  children: [
+    { path: <span class="s">'publicaciones'</span> },      <span class="c">// ?orden=&amp;pagina=</span>
+    { path: <span class="s">'publicaciones/:id'</span> },  <span class="c">// input id</span>
+    { path: <span class="s">'mi-perfil'</span> },
+  ] },</pre>
+        <div class="card">
+          <h3>Componentes reutilizables</h3>
+          <ul class="lista">
+            <li><code class="in">PublicacionCard</code> · cada publicación es un componente (feed, detalle, perfil)</li>
+            <li><code class="in">Comentarios</code> · lista, “cargar más”, comentar y edición inline</li>
+            <li><code class="in">NuevaPublicacion</code> · formulario con vista previa de imagen</li>
+            <li><code class="in">Avatar</code>, <code class="in">Icon</code>, <code class="in">Modal</code>, <code class="in">Cargando</code>, pipe <code class="in">tiempoRelativo</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. Sesión -->
+  <section class="slide" aria-label="Ciclo de sesión">
+    <p class="kicker">09 · Sesión</p>
+    <h2>El reloj de la sesión</h2>
+    <div class="contenido">
+      <div class="diag"><svg class="diagrama" viewBox="0 0 960 220" role="img" aria-label="Línea de tiempo: login en el minuto 0, aviso en el minuto 10, vencimiento en el minuto 15">
+        <defs><linearGradient id="tl" x1="0" x2="1"><stop offset="0" stop-color="#c6f432"/><stop offset=".66" stop-color="#ffb800"/><stop offset="1" stop-color="#ff4d5e"/></linearGradient></defs>
+        <rect x="40" y="96" width="880" height="10" rx="5" fill="url(#tl)"/>
+        <circle cx="40" cy="101" r="13" fill="#0b0f14" stroke="#c6f432" stroke-width="4"/>
+        <circle cx="627" cy="101" r="13" fill="#0b0f14" stroke="#ffb800" stroke-width="4"/>
+        <circle cx="920" cy="101" r="13" fill="#0b0f14" stroke="#ff4d5e" stroke-width="4"/>
+        <text x="40" y="60" font-size="17" font-weight="800">0 min</text>
+        <text x="40" y="146" class="sub">login · registro · refresco</text>
+        <text x="40" y="166" class="sub">se programa el aviso</text>
+        <text x="627" y="60" font-size="17" font-weight="800" text-anchor="middle">10 min</text>
+        <text x="627" y="146" class="sub" text-anchor="middle">modal: “Quedan 5 minutos”</text>
+        <text x="627" y="166" class="sub" text-anchor="middle">Extender → /auth/refrescar → reinicia</text>
+        <text x="920" y="60" font-size="17" font-weight="800" text-anchor="end">15 min</text>
+        <text x="920" y="146" class="sub" text-anchor="end">token vencido</text>
+        <text x="920" y="166" class="sub" text-anchor="end">cierra sesión → login</text>
+      </svg></div>
+      <div class="grid g3" style="margin-top:.5rem">
+        <div class="card naranja"><h3>Al abrir la app</h3><p>Pantalla de carga con spinner mientras <code class="in">/auth/autorizar</code> valida el token: válido → publicaciones; inválido → login.</p></div>
+        <div class="card naranja"><h3>Cualquier 401</h3><p>El interceptor cierra la sesión, redirige al login y explica el motivo en un modal.</p></div>
+        <div class="card naranja"><h3>Reloj robusto</h3><p>El aviso se calcula desde que llegó el token más su duración (<code class="in">exp − iat</code>), así un desfase de hora con el servidor no lo adelanta.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. Diseño -->
+  <section class="slide" aria-label="Diseño">
+    <p class="kicker">10 · Diseño</p>
+    <h2>Identidad deportiva</h2>
+    <div class="contenido">
+      <div class="grid g2">
+        <div class="grid" style="align-content:start">
+          <div class="card">
+            <h3>Inspiración</h3>
+            <ul class="lista">
+              <li><strong>Facebook</strong>: barra superior con navegación central y feed de tarjetas</li>
+              <li><strong>X</strong>: menú lateral, pestañas “Más recientes / Más gustadas”, tema oscuro</li>
+              <li><strong>Instagram</strong>: anillo degradado en los avatares y portada del perfil</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Experiencia</h3>
+            <ul class="lista">
+              <li>Validaciones en vivo con mensajes por campo</li>
+              <li>Modales de éxito, error y confirmación</li>
+              <li>Esqueletos de carga, estados vacíos y de error</li>
+              <li>Responsive: navegación inferior en móvil</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Tokens de diseño</h3>
+          <div class="grid g2" style="margin-top:.8rem">
+            <div class="swatch"><i style="background:#0b0f14"></i><div>Fondo<br><span>#0b0f14</span></div></div>
+            <div class="swatch"><i style="background:#121921"></i><div>Superficie<br><span>#121921</span></div></div>
+            <div class="swatch"><i style="background:#c6f432"></i><div>Lima (acción)<br><span>#c6f432</span></div></div>
+            <div class="swatch"><i style="background:#ff6b2c"></i><div>Naranja (energía)<br><span>#ff6b2c</span></div></div>
+            <div class="swatch"><i style="background:#ff4d5e"></i><div>Error<br><span>#ff4d5e</span></div></div>
+            <div class="swatch"><i style="background:linear-gradient(135deg,#ff6b2c,#ffb800,#c6f432)"></i><div>Degradado<br><span>marca</span></div></div>
+          </div>
+          <p style="margin-top:1.2rem"><span style="font-family:var(--display);font-size:2rem;color:var(--text);letter-spacing:.04em">BEBAS NEUE</span> para títulos y <strong style="color:var(--text)">Inter</strong> para texto. Favicon SVG propio con la “A” de Arena.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. Calidad -->
+  <section class="slide" aria-label="Calidad y pruebas">
+    <p class="kicker">11 · Calidad</p>
+    <h2>Probado, no supuesto</h2>
+    <div class="contenido">
+      <div class="grid g4">
+        <div class="card stat"><div class="num grad">12</div><div class="lbl">tests e2e del back<br>(Vitest + Supertest)</div></div>
+        <div class="card stat"><div class="num grad">50</div><div class="lbl">aserciones Postman<br>(Newman, 0 fallas)</div></div>
+        <div class="card stat"><div class="num grad">13</div><div class="lbl">escenarios en navegador<br>(Playwright)</div></div>
+        <div class="card stat"><div class="num grad">0</div><div class="lbl">errores de consola<br>en el recorrido</div></div>
+      </div>
+      <div class="grid g2" style="margin-top:1rem">
+        <div class="card">
+          <h3>Qué se verificó</h3>
+          <ul class="check">
+            <li>Cada status code de la tabla de endpoints</li>
+            <li>Paginación, orden por fecha y por me gusta</li>
+            <li>Aviso a los 10 min y vencimiento a los 15 (reloj simulado)</li>
+            <li>Scripts de <code class="in">db/</code> aplicados sobre una base vacía</li>
+          </ul>
+        </div>
+        <div class="card naranja">
+          <h3>Bugs que las pruebas encontraron</h3>
+          <ul class="lista">
+            <li>Los formularios de comentario no enviaban: <code class="in">(ngSubmit)</code> sin directiva de formulario → se pasó a <code class="in">(submit)</code></li>
+            <li>El aviso de sesión se re-disparaba con desfase de reloj → cálculo relativo a la llegada del token</li>
+            <li>Clase <code class="in">.error</code> del modal chocaba con la global → atributo <code class="in">data-tipo</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. Sprints -->
+  <section class="slide" aria-label="Cumplimiento por sprint">
+    <p class="kicker">12 · Entregables</p>
+    <h2>Sprint por sprint</h2>
+    <div class="contenido">
+      <div class="grid g3">
+        <div class="card acento">
+          <h3>Sprint 1</h3>
+          <ul class="check">
+            <li>Proyectos Angular y NestJS</li>
+            <li>Registro con foto y validaciones</li>
+            <li>Login por correo o usuario</li>
+            <li>Contraseña encriptada</li>
+            <li>Módulos Auth, Usuarios, Publicaciones</li>
+            <li>Favicon propio y navegación</li>
+          </ul>
+        </div>
+        <div class="card acento">
+          <h3>Sprint 2</h3>
+          <ul class="check">
+            <li>Alta, listado y baja lógica</li>
+            <li>Orden fecha / me gusta, offset y limit</li>
+            <li>Filtro por usuario</li>
+            <li>Me gusta único, dar y quitar</li>
+            <li>Cada publicación es un componente</li>
+            <li>Mi perfil con últimas 3 y comentarios</li>
+          </ul>
+        </div>
+        <div class="card acento">
+          <h3>Sprint 3</h3>
+          <ul class="check">
+            <li>Página de publicación con comentarios</li>
+            <li>“Cargar más” sin perder los anteriores</li>
+            <li>Edición marcada como “editado”</li>
+            <li>JWT de 15 min, autorizar y refrescar</li>
+            <li>Pantalla de carga al iniciar</li>
+            <li>Aviso de sesión y redirección ante 401</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. Cómo correrlo -->
+  <section class="slide" aria-label="Cómo ejecutarlo">
+    <p class="kicker">13 · Puesta en marcha</p>
+    <h2>Cómo correrlo y qué sigue</h2>
+    <div class="contenido">
+      <div class="grid g2">
+        <pre><span class="c"># Back · http://localhost:3000/api</span>
+cd back
+cp env.example .env   <span class="c"># MONGO_URI, JWT_SECRET, BASE_URL, CORS_ORIGIN</span>
+npm install
+npm run start:dev
+
+<span class="c"># Front · http://localhost:4200</span>
+cd front
+npm install
+npm start
+
+<span class="c"># Pruebas</span>
+MONGO_DB=UTN_test npm run test:e2e   <span class="c"># en back/</span>
+npx newman run postman/*.json</pre>
+        <div class="grid" style="align-content:start">
+          <div class="card naranja"><h3>Deploy</h3><p>Back en Render/Railway con las variables de entorno; front en Vercel/Netlify apuntando <code class="in">environment.ts</code> al back y con rewrite de SPA a <code class="in">index.html</code>.</p></div>
+          <div class="card"><h3>Próximos pasos</h3>
+            <ul class="lista">
+              <li>Edición del perfil (requisito general aún sin sprint)</li>
+              <li>Imágenes en un storage externo (el disco del hosting no persiste)</li>
+              <li>Token en cookie httpOnly para mitigar XSS</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15. Cierre -->
+  <section class="slide portada" aria-label="Cierre">
+    <div class="contenido">
+      <p class="kicker">Gracias</p>
+      <h1 class="grad" style="font-size:clamp(4rem,12vw,9rem)">¿PREGUNTAS?</h1>
+      <p class="tag">Arena · la red social del deporte</p>
+    </div>
+  </section>
+
+</main>
+
+<nav class="barra" aria-label="Navegación de diapositivas">
+  <button type="button" id="anterior" aria-label="Diapositiva anterior">‹</button>
+  <div class="progreso" aria-hidden="true"><div id="barra"></div></div>
+  <span class="contador" id="contador" aria-live="polite"></span>
+  <button type="button" id="siguiente" aria-label="Diapositiva siguiente">›</button>
+  <span class="ayuda-teclas">← → para navegar</span>
+</nav>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const anterior = document.getElementById('anterior');
+  const siguiente = document.getElementById('siguiente');
+  const contador = document.getElementById('contador');
+  const barra = document.getElementById('barra');
+  let actual = 0;
+
+  function mostrar(i) {
+    actual = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, n) => {
+      s.classList.toggle('activa', n === actual);
+      s.classList.toggle('previa', n < actual);
+      s.setAttribute('aria-hidden', n !== actual);
+    });
+    slides[actual].scrollTop = 0;
+    contador.textContent = `${actual + 1} / ${slides.length}`;
+    barra.style.width = `${((actual + 1) / slides.length) * 100}%`;
+    anterior.disabled = actual === 0;
+    siguiente.disabled = actual === slides.length - 1;
+    history.replaceState(null, '', `#${actual + 1}`);
+  }
+
+  anterior.addEventListener('click', () => mostrar(actual - 1));
+  siguiente.addEventListener('click', () => mostrar(actual + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); mostrar(actual + 1); }
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); mostrar(actual - 1); }
+    if (e.key === 'Home') mostrar(0);
+    if (e.key === 'End') mostrar(slides.length - 1);
+  });
+
+  let inicioX = null;
+  document.addEventListener('touchstart', (e) => { inicioX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (inicioX === null) return;
+    const dx = e.changedTouches[0].clientX - inicioX;
+    if (Math.abs(dx) > 60) mostrar(actual + (dx < 0 ? 1 : -1));
+    inicioX = null;
+  });
+
+  mostrar((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>

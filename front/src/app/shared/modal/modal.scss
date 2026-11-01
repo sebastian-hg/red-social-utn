@@ -1,0 +1,87 @@
+.fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(5 8 12 / 0.7);
+  backdrop-filter: blur(6px);
+  animation: aparecer 0.18s ease-out;
+}
+
+.caja {
+  --color: var(--lime);
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem 1.75rem 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--color);
+  animation: subir 0.22s ease-out;
+
+  &[data-tipo='error'] {
+    --color: var(--danger);
+  }
+  &[data-tipo='info'],
+  &[data-tipo='confirmar'] {
+    --color: var(--orange);
+  }
+}
+
+.icono {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--color);
+  background: color-mix(in srgb, var(--color) 14%, transparent);
+}
+
+h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.35rem;
+}
+
+p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+ul {
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem 0.85rem 2rem;
+  text-align: left;
+  background: var(--surface-2);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+
+  .btn {
+    min-width: 130px;
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+}

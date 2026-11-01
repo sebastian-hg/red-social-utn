@@ -1,0 +1,37 @@
+<header class="barra-detalle">
+  <button type="button" class="volver" (click)="volver()" aria-label="Volver">
+    <app-icon nombre="flecha" [tamano]="20" />
+  </button>
+  <h1 class="display">Publicación</h1>
+</header>
+
+@switch (estado()) {
+  @case ('cargando') {
+    <div class="card cargando"><span class="spinner"></span> Cargando publicación...</div>
+  }
+  @case ('no-existe') {
+    <section class="card estado-vacio">
+      <app-icon nombre="alerta" [tamano]="44" />
+      <h3>Esta publicación no existe</h3>
+      <p>Puede que la hayan eliminado o que el enlace sea incorrecto.</p>
+      <a routerLink="/publicaciones" class="btn btn-ghost">Ir a publicaciones</a>
+    </section>
+  }
+  @case ('error') {
+    <section class="card estado-vacio">
+      <app-icon nombre="alerta" [tamano]="44" />
+      <h3>No pudimos cargar la publicación</h3>
+      <p>Revisá tu conexión e intentá nuevamente.</p>
+      <button type="button" class="btn btn-ghost" (click)="cargar(id())">Reintentar</button>
+    </section>
+  }
+  @case ('ok') {
+    @if (publicacion(); as p) {
+      <app-publicacion-card [publicacion]="p" [detalle]="true" (eliminada)="alEliminar()" />
+      <section class="card comentarios">
+        <h2>Comentarios</h2>
+        <app-comentarios [publicacionId]="p._id" [tamanoPagina]="5" (comentado)="sumarComentario()" />
+      </section>
+    }
+  }
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "_id": { "$oid": "64a000000000000000000001" },
+    "nombre": "Admin",
+    "apellido": "Arena",
+    "correo": "admin@arena.com",
+    "nombreUsuario": "admin",
+    "password": "$2b$10$3yt6lZBlPtP1jayCZyNAhea/VV5Vkq/817u5fO1N3PQ7Ay1zff5IO",
+    "fechaNacimiento": { "$date": "1990-01-01T00:00:00.000Z" },
+    "descripcion": "Administrador de Arena. Contraseña de ejemplo: Admin1234 (cambiarla en un entorno real).",
+    "imagenPerfil": null,
+    "perfil": "administrador",
+    "createdAt": { "$date": "2026-10-26T00:00:00.000Z" },
+    "updatedAt": { "$date": "2026-10-26T00:00:00.000Z" }
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "baseDeDatos": "UTN",
+  "sprint": 2,
+  "colecciones": [
+    {
+      "nombre": "publicaciones",
+      "descripcion": "Se habilita el CRUD: alta (con imagen opcional guardada en uploads/publicaciones), listado paginado por fecha o por cantidad de me gusta, filtro por autor, baja lógica (activa = false) y me gusta (array meGusta con los _id de los usuarios, uno por usuario).",
+      "esquema": "../sprint-1/publicaciones.comando.json",
+      "indices": "publicaciones.indices.json",
+      "datosDeEjemplo": "publicaciones.seed.json"
+    }
+  ],
+  "comoUsar": [
+    "Los índices los crea Mongoose al levantar el back; este script es para crearlos a mano o documentarlos.",
+    "Crear índices (mongosh): use UTN; db.runCommand(<contenido de publicaciones.indices.json>)",
+    "Cargar datos de ejemplo (requiere el admin de sprint-1/usuarios.seed.json): mongoimport --uri \"<MONGO_URI>\" --db UTN --collection publicaciones --jsonArray --file publicaciones.seed.json"
+  ]
+}

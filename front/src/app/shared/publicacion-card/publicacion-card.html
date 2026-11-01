@@ -1,0 +1,52 @@
+@let p = publicacion();
+<article class="card publicacion" [class.detalle]="detalle()" [class.eliminando]="eliminando()">
+  <header>
+    <app-avatar [imagen]="p.autor.imagenPerfil" [nombre]="nombreAutor()" [tamano]="detalle() ? 52 : 44" />
+    <div class="autor">
+      <strong>
+        {{ nombreAutor() }}
+        @if (p.autor.perfil === 'administrador') {
+          <span class="admin" title="Administrador"><app-icon nombre="escudo" [tamano]="14" /></span>
+        }
+      </strong>
+      <span>&#64;{{ p.autor.nombreUsuario }} · {{ p.createdAt | tiempoRelativo }}</span>
+    </div>
+    @if (puedeEliminar()) {
+      <button type="button" class="eliminar" (click)="eliminar()" [disabled]="eliminando()"
+        aria-label="Eliminar publicación" title="Eliminar publicación">
+        <app-icon nombre="papelera" [tamano]="18" />
+      </button>
+    }
+  </header>
+
+  @if (detalle()) {
+    <h1>{{ p.titulo }}</h1>
+  } @else {
+    <h2><a [routerLink]="['/publicaciones', p._id]">{{ p.titulo }}</a></h2>
+  }
+  <p class="mensaje">{{ p.mensaje }}</p>
+
+  @if (p.imagen) {
+    @if (detalle()) {
+      <img class="imagen" [src]="p.imagen" [alt]="p.titulo" />
+    } @else {
+      <a [routerLink]="['/publicaciones', p._id]"><img class="imagen" [src]="p.imagen" [alt]="p.titulo" loading="lazy" /></a>
+    }
+  }
+
+  <footer>
+    <button type="button" class="accion me-gusta" [class.activo]="meGustaYo()" (click)="alternarMeGusta()"
+      [disabled]="procesandoMeGusta()" [attr.aria-pressed]="meGustaYo()"
+      [attr.aria-label]="meGustaYo() ? 'Quitar me gusta' : 'Me gusta'">
+      <app-icon nombre="corazon" [relleno]="meGustaYo()" [tamano]="20" />
+      {{ cantidadMeGusta() }} <span>Me gusta</span>
+    </button>
+    @if (detalle()) {
+      <span class="accion"><app-icon nombre="comentario" [tamano]="20" /> {{ p.cantidadComentarios }} <span>Comentarios</span></span>
+    } @else {
+      <a class="accion" [routerLink]="['/publicaciones', p._id]">
+        <app-icon nombre="comentario" [tamano]="20" /> {{ p.cantidadComentarios }} <span>Comentarios</span>
+      </a>
+    }
+  </footer>
+</article>

@@ -1,0 +1,19 @@
+{
+  "baseDeDatos": "UTN",
+  "sprint": 3,
+  "colecciones": [
+    {
+      "nombre": "comentarios",
+      "descripcion": "Comentarios de las publicaciones. Cada uno guarda la publicación, el autor, el mensaje y la fecha (createdAt). Al editarlo se marca modificado = true. Se listan paginados, los más recientes primero.",
+      "esquema": "comentarios.comando.json"
+    }
+  ],
+  "notas": [
+    "La autenticación JWT no agrega colecciones: el token se firma con JWT_SECRET (variable de entorno del back), contiene sub (_id), correo, nombreUsuario y perfil, y vence a los 15 minutos."
+  ],
+  "comoUsar": [
+    "La colección y sus índices los crea Mongoose al levantar el back; estos scripts son para crearlos a mano o documentarlos.",
+    "Crear colección con validación (mongosh): use UTN; db.runCommand(<contenido de comentarios.comando.json → createCollection>)",
+    "Crear índices (mongosh): db.runCommand(<contenido de comentarios.comando.json → createIndexes>)"
+  ]
+}

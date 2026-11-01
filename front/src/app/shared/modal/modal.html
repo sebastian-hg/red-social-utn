@@ -1,0 +1,35 @@
+@if (modal(); as m) {
+  <div class="fondo" (click)="modalService.cerrar(false)">
+    <div
+      class="caja card"
+      [attr.data-tipo]="m.tipo"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-titulo"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="icono"><app-icon [nombre]="icono()" [tamano]="28" /></div>
+      <h2 id="modal-titulo">{{ m.titulo }}</h2>
+      <p>{{ m.mensaje }}</p>
+
+      @if (m.detalles?.length) {
+        <ul>
+          @for (detalle of m.detalles; track detalle) {
+            <li>{{ detalle }}</li>
+          }
+        </ul>
+      }
+
+      <div class="acciones">
+        @if (m.tipo === 'confirmar') {
+          <button type="button" class="btn btn-ghost" (click)="modalService.cerrar(false)">
+            {{ m.textoCancelar ?? 'Cancelar' }}
+          </button>
+        }
+        <button type="button" class="btn btn-primary" (click)="modalService.cerrar(true)" autofocus>
+          {{ m.textoAceptar ?? 'Entendido' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

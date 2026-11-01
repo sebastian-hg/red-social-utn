@@ -1,0 +1,31 @@
+{
+  "createCollection": {
+    "create": "usuarios",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["nombre", "apellido", "correo", "nombreUsuario", "password", "fechaNacimiento", "perfil"],
+        "properties": {
+          "nombre": { "bsonType": "string", "maxLength": 50 },
+          "apellido": { "bsonType": "string", "maxLength": 50 },
+          "correo": { "bsonType": "string", "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$" },
+          "nombreUsuario": { "bsonType": "string", "pattern": "^[a-z0-9_.]{3,20}$" },
+          "password": { "bsonType": "string", "description": "Hash bcrypt, nunca la contraseña en texto plano" },
+          "fechaNacimiento": { "bsonType": "date" },
+          "descripcion": { "bsonType": "string", "maxLength": 200 },
+          "imagenPerfil": { "bsonType": ["string", "null"], "description": "URL pública de la imagen subida" },
+          "perfil": { "enum": ["usuario", "administrador"] },
+          "createdAt": { "bsonType": "date" },
+          "updatedAt": { "bsonType": "date" }
+        }
+      }
+    }
+  },
+  "createIndexes": {
+    "createIndexes": "usuarios",
+    "indexes": [
+      { "key": { "correo": 1 }, "name": "correo_1", "unique": true },
+      { "key": { "nombreUsuario": 1 }, "name": "nombreUsuario_1", "unique": true }
+    ]
+  }
+}

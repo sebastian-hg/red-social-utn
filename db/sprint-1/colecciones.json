@@ -1,0 +1,23 @@
+{
+  "baseDeDatos": "UTN",
+  "sprint": 1,
+  "colecciones": [
+    {
+      "nombre": "usuarios",
+      "descripcion": "Usuarios registrados. correo y nombreUsuario son únicos (se guardan en minúsculas). La contraseña se guarda encriptada con bcrypt.",
+      "esquema": "usuarios.comando.json",
+      "datosDeEjemplo": "usuarios.seed.json"
+    },
+    {
+      "nombre": "publicaciones",
+      "descripcion": "Publicaciones de los usuarios. Se crea en el sprint 1 (schema y módulo); el CRUD se implementa en el sprint 2. La baja es lógica (activa = false).",
+      "esquema": "publicaciones.comando.json"
+    }
+  ],
+  "comoUsar": [
+    "Las colecciones e índices los crea Mongoose automáticamente al levantar el back; estos scripts son para crearlas a mano o documentarlas.",
+    "Crear colección con validación (mongosh): use UTN; db.runCommand(<contenido de usuarios.comando.json → createCollection>)",
+    "Crear índices (mongosh): db.runCommand(<contenido de usuarios.comando.json → createIndexes>)",
+    "Cargar datos de ejemplo: mongoimport --uri \"<MONGO_URI>\" --db UTN --collection usuarios --jsonArray --file usuarios.seed.json"
+  ]
+}

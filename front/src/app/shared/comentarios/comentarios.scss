@@ -1,0 +1,132 @@
+:host {
+  display: block;
+}
+
+.escribir {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+
+  .input {
+    border-radius: 999px;
+    padding: 0.65rem 1rem;
+  }
+}
+
+.enviar {
+  padding: 0.6rem;
+  flex-shrink: 0;
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+}
+
+.burbuja {
+  flex: 1;
+  min-width: 0;
+  padding: 0.6rem 0.9rem;
+  border-radius: 4px 16px 16px 16px;
+  background: var(--surface-2);
+
+  p {
+    margin: 0.2rem 0 0;
+    line-height: 1.45;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.4rem;
+  font-size: 0.85rem;
+
+  span {
+    color: var(--muted);
+  }
+}
+
+.editado {
+  font-style: italic;
+  color: var(--orange) !important;
+}
+
+.edicion {
+  margin-top: 0.4rem;
+
+  textarea {
+    min-height: 60px;
+  }
+  div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+  }
+  .btn {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+  }
+}
+
+.editar {
+  display: grid;
+  place-items: center;
+  padding: 0.4rem;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  &:hover {
+    color: var(--lime);
+    background: var(--surface-2);
+  }
+}
+
+.vacio {
+  justify-content: center;
+  padding: 0.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.aviso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+
+  button {
+    border: none;
+    background: none;
+    color: var(--lime);
+    font: 600 0.9rem var(--font);
+    cursor: pointer;
+  }
+}
+
+.cargar-mas {
+  display: flex;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.55rem;
+  font-size: 0.88rem;
+}

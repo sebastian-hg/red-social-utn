@@ -1,0 +1,21 @@
+{
+  "createCollection": {
+    "create": "publicaciones",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["titulo", "mensaje", "autor", "meGusta", "activa"],
+        "properties": {
+          "titulo": { "bsonType": "string" },
+          "mensaje": { "bsonType": "string" },
+          "imagen": { "bsonType": ["string", "null"], "description": "URL de la imagen, opcional" },
+          "autor": { "bsonType": "objectId", "description": "Referencia a usuarios._id" },
+          "meGusta": { "bsonType": "array", "items": { "bsonType": "objectId" }, "description": "_id de los usuarios que dieron me gusta" },
+          "activa": { "bsonType": "bool", "description": "false = baja lógica" },
+          "createdAt": { "bsonType": "date" },
+          "updatedAt": { "bsonType": "date" }
+        }
+      }
+    }
+  }
+}

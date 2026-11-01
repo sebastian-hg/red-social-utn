@@ -1,0 +1,68 @@
+@if (usuario(); as u) {
+  <section class="card perfil">
+    <div class="portada"></div>
+
+    <div class="cabecera">
+      <app-avatar [imagen]="u.imagenPerfil" [nombre]="u.nombre + ' ' + u.apellido" [tamano]="128" />
+      @if (u.perfil === 'administrador') {
+        <span class="insignia admin"><app-icon nombre="escudo" [tamano]="14" /> Administrador</span>
+      } @else {
+        <span class="insignia"><app-icon nombre="rayo" [tamano]="14" /> Usuario</span>
+      }
+    </div>
+
+    <div class="datos">
+      <h1>{{ u.nombre }} {{ u.apellido }}</h1>
+      <p class="arroba">&#64;{{ u.nombreUsuario }}</p>
+
+      @if (u.descripcion) {
+        <p class="descripcion">{{ u.descripcion }}</p>
+      } @else {
+        <p class="descripcion vacia">Todavía no agregaste una descripción.</p>
+      }
+
+      <ul class="info">
+        <li><app-icon nombre="correo" [tamano]="16" /> {{ u.correo }}</li>
+        <li>
+          <app-icon nombre="torta" [tamano]="16" />
+          {{ u.fechaNacimiento | date: "d 'de' MMMM 'de' y" : 'UTC' }} · {{ edad() }} años
+        </li>
+        <li>
+          <app-icon nombre="calendario" [tamano]="16" />
+          Se unió en {{ u.createdAt | date: "MMMM 'de' y" }}
+        </li>
+      </ul>
+      <p class="contador"><strong>{{ totalPublicaciones() }}</strong> publicaciones</p>
+    </div>
+
+    <nav class="pestanas">
+      <span class="activa">Mis últimas publicaciones</span>
+    </nav>
+  </section>
+
+  @if (cargando()) {
+    <div class="card cargando"><span class="spinner"></span> Cargando tus publicaciones...</div>
+  } @else if (error()) {
+    <section class="card estado-vacio">
+      <app-icon nombre="alerta" [tamano]="44" />
+      <h3>No pudimos cargar tus publicaciones</h3>
+      <button type="button" class="btn btn-ghost" (click)="cargarPublicaciones()">Reintentar</button>
+    </section>
+  } @else {
+    @for (p of publicaciones(); track p._id) {
+      <div class="publicacion">
+        <app-publicacion-card [publicacion]="p" (eliminada)="cargarPublicaciones()" />
+        <div class="card comentarios">
+          <app-comentarios [publicacionId]="p._id" [tamanoPagina]="3" />
+        </div>
+      </div>
+    } @empty {
+      <section class="card estado-vacio">
+        <app-icon nombre="imagen" [tamano]="44" />
+        <h3>Todavía no publicaste nada</h3>
+        <p>Tus últimas publicaciones y sus comentarios van a aparecer acá.</p>
+        <a routerLink="/publicaciones" class="btn btn-primary">Crear mi primera publicación</a>
+      </section>
+    }
+  }
+}

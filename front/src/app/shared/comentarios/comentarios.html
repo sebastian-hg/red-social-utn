@@ -1,0 +1,63 @@
+@if (usuario(); as u) {
+  <form class="escribir" (submit)="$event.preventDefault(); comentar()">
+    <app-avatar [imagen]="u.imagenPerfil" [nombre]="u.nombre + ' ' + u.apellido" [tamano]="36" />
+    <input class="input" [formControl]="nuevo" maxlength="500" placeholder="Escribí un comentario..."
+      aria-label="Nuevo comentario" />
+    <button type="submit" class="btn btn-primary enviar" [disabled]="enviando() || !nuevo.value.trim()"
+      aria-label="Publicar comentario">
+      @if (enviando()) {
+        <span class="spinner"></span>
+      } @else {
+        <app-icon nombre="enviar" [tamano]="18" />
+      }
+    </button>
+  </form>
+}
+
+<ul class="lista">
+  @for (c of comentarios(); track c._id) {
+    <li>
+      <app-avatar [imagen]="c.autor.imagenPerfil" [nombre]="c.autor.nombre + ' ' + c.autor.apellido" [tamano]="36" />
+      <div class="burbuja">
+        <div class="cabecera">
+          <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}</strong>
+          <span>&#64;{{ c.autor.nombreUsuario }} · {{ c.createdAt | tiempoRelativo }}</span>
+          @if (c.modificado) {
+            <span class="editado">(editado)</span>
+          }
+        </div>
+
+        @if (editandoId() === c._id) {
+          <form class="edicion" (submit)="$event.preventDefault(); guardarEdicion(c)">
+            <textarea class="input" [formControl]="edicion" rows="2" maxlength="500" aria-label="Editar comentario"></textarea>
+            <div>
+              <button type="button" class="btn btn-ghost" (click)="editandoId.set(null)">Cancelar</button>
+              <button type="submit" class="btn btn-primary" [disabled]="guardando() || !edicion.value.trim()">Guardar</button>
+            </div>
+          </form>
+        } @else {
+          <p>{{ c.mensaje }}</p>
+        }
+      </div>
+      @if (c.autor._id === usuario()?._id && editandoId() !== c._id) {
+        <button type="button" class="editar" (click)="editar(c)" aria-label="Editar comentario" title="Editar">
+          <app-icon nombre="lapiz" [tamano]="15" />
+        </button>
+      }
+    </li>
+  } @empty {
+    @if (!cargando() && !error()) {
+      <li class="vacio">Todavía no hay comentarios. ¡Sé el primero en comentar!</li>
+    }
+  }
+</ul>
+
+@if (error()) {
+  <p class="aviso">No pudimos cargar los comentarios. <button type="button" (click)="cargarMas()">Reintentar</button></p>
+} @else if (cargando()) {
+  <p class="aviso"><span class="spinner"></span> Cargando comentarios...</p>
+} @else if (hayMas()) {
+  <button type="button" class="btn btn-ghost cargar-mas" (click)="cargarMas()">
+    Cargar más comentarios ({{ total() - comentarios().length }})
+  </button>
+}

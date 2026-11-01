@@ -1,0 +1,20 @@
+{
+  "createIndexes": "publicaciones",
+  "indexes": [
+    {
+      "key": {
+        "activa": 1,
+        "createdAt": -1
+      },
+      "name": "activa_1_createdAt_-1"
+    },
+    {
+      "key": {
+        "autor": 1,
+        "activa": 1,
+        "createdAt": -1
+      },
+      "name": "autor_1_activa_1_createdAt_-1"
+    }
+  ]
+}

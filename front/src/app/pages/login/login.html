@@ -1,0 +1,75 @@
+<main class="auth-page">
+  <section class="auth-hero">
+    <a routerLink="/publicaciones" class="auth-logo display">ARENA</a>
+    <div>
+      <h1>Tu juego.<br /><span>Tu comunidad.</span></h1>
+      <p>Compartí tus entrenamientos, festejá los goles y seguí a los atletas que te inspiran.</p>
+    </div>
+    <div class="auth-deportes">
+      <span>⚽ Fútbol</span><span>🏀 Básquet</span><span>🎾 Tenis</span><span>🏃 Running</span>
+      <span>🏐 Vóley</span><span>🏉 Rugby</span>
+    </div>
+  </section>
+
+  <section class="auth-panel">
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="ingresar()" novalidate>
+      <h2>Iniciar sesión</h2>
+      <p>Entrá con tu correo o tu nombre de usuario.</p>
+
+      <div class="campo">
+        <label for="usuario">Correo o nombre de usuario</label>
+        <input
+          id="usuario"
+          class="input"
+          formControlName="usuario"
+          autocomplete="username"
+          placeholder="leo10 o leo@correo.com"
+          [class.invalido]="invalido('usuario')"
+        />
+        @if (invalido('usuario')) {
+          <span class="error">Ingresá tu correo o nombre de usuario.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="password">Contraseña</label>
+        <div class="con-boton">
+          <input
+            id="password"
+            class="input"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            [type]="verPassword() ? 'text' : 'password'"
+            [class.invalido]="invalido('password')"
+          />
+          <button
+            type="button"
+            class="ver-password"
+            (click)="verPassword.set(!verPassword())"
+            [attr.aria-label]="verPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          >
+            <app-icon [nombre]="verPassword() ? 'ojoTachado' : 'ojo'" [tamano]="18" />
+          </button>
+        </div>
+        @if (invalido('password')) {
+          @if (form.controls.password.hasError('required')) {
+            <span class="error">Ingresá tu contraseña.</span>
+          } @else {
+            <span class="error">Debe tener al menos 8 caracteres, una mayúscula y un número.</span>
+          }
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="enviando()">
+        @if (enviando()) {
+          <span class="spinner"></span> Ingresando...
+        } @else {
+          Ingresar
+        }
+      </button>
+
+      <p class="auth-pie">¿Todavía no tenés cuenta? <a routerLink="/registro">Registrate</a></p>
+    </form>
+  </section>
+</main>

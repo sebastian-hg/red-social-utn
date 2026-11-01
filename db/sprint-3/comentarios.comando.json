@@ -1,0 +1,52 @@
+{
+  "createCollection": {
+    "create": "comentarios",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "publicacion",
+          "autor",
+          "mensaje",
+          "modificado"
+        ],
+        "properties": {
+          "publicacion": {
+            "bsonType": "objectId",
+            "description": "Referencia a publicaciones._id"
+          },
+          "autor": {
+            "bsonType": "objectId",
+            "description": "Referencia a usuarios._id"
+          },
+          "mensaje": {
+            "bsonType": "string",
+            "maxLength": 500
+          },
+          "modificado": {
+            "bsonType": "bool",
+            "description": "true si el autor lo editó"
+          },
+          "createdAt": {
+            "bsonType": "date"
+          },
+          "updatedAt": {
+            "bsonType": "date"
+          }
+        }
+      }
+    }
+  },
+  "createIndexes": {
+    "createIndexes": "comentarios",
+    "indexes": [
+      {
+        "key": {
+          "publicacion": 1,
+          "createdAt": -1
+        },
+        "name": "publicacion_1_createdAt_-1"
+      }
+    ]
+  }
+}

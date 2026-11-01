@@ -1,0 +1,1148 @@
+{
+  "info": {
+    "name": "Arena - Red social",
+    "description": "Endpoints del back NestJS. Ejecutar las carpetas en orden: el login guarda el token en {{token}} y los requests protegidos lo envían como Bearer.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "sufijo",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "tokenOtro",
+      "value": ""
+    },
+    {
+      "key": "publicacionId",
+      "value": ""
+    },
+    {
+      "key": "comentarioId",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Genera un sufijo único por ejecución para no chocar con usuarios existentes",
+          "if (!pm.collectionVariables.get('sufijo')) {",
+          "  pm.collectionVariables.set('sufijo', Date.now().toString().slice(-6));",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Registro - OK (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('Perfil por defecto: usuario', () => pm.expect(body.usuario.perfil).to.eql('usuario'));",
+                  "pm.test('No devuelve la contraseña', () => pm.expect(body.usuario.password).to.be.undefined);",
+                  "pm.test('Devuelve un token', () => pm.expect(body.token).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/registro",
+            "description": "multipart/form-data. imagenPerfil es opcional (JPG, PNG, WEBP o GIF, máx. 5 MB): seleccionar un archivo en el campo para probar la subida.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "nombre",
+                  "value": "Lionel",
+                  "type": "text"
+                },
+                {
+                  "key": "apellido",
+                  "value": "Messi",
+                  "type": "text"
+                },
+                {
+                  "key": "correo",
+                  "value": "leo{{sufijo}}@mail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "nombreUsuario",
+                  "value": "leo{{sufijo}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Campeon2022",
+                  "type": "text"
+                },
+                {
+                  "key": "fechaNacimiento",
+                  "value": "1987-06-24",
+                  "type": "text"
+                },
+                {
+                  "key": "descripcion",
+                  "value": "Capitán. Campeón del mundo 2022.",
+                  "type": "text"
+                },
+                {
+                  "key": "imagenPerfil",
+                  "type": "file",
+                  "src": [],
+                  "disabled": true
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Registro - segundo usuario (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('tokenOtro', pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/registro",
+            "description": "Segundo usuario, se usa para probar los 403 (editar/eliminar contenido ajeno).",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "nombre",
+                  "value": "Julián",
+                  "type": "text"
+                },
+                {
+                  "key": "apellido",
+                  "value": "Álvarez",
+                  "type": "text"
+                },
+                {
+                  "key": "correo",
+                  "value": "arana{{sufijo}}@mail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "nombreUsuario",
+                  "value": "arana{{sufijo}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Campeon2022",
+                  "type": "text"
+                },
+                {
+                  "key": "fechaNacimiento",
+                  "value": "1987-06-24",
+                  "type": "text"
+                },
+                {
+                  "key": "descripcion",
+                  "value": "Delantero.",
+                  "type": "text"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Registro - correo duplicado (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409 Conflict', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/registro",
+            "description": "Ejecutar después de 'Registro - OK': reutiliza el mismo correo.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "nombre",
+                  "value": "Otro",
+                  "type": "text"
+                },
+                {
+                  "key": "apellido",
+                  "value": "Usuario",
+                  "type": "text"
+                },
+                {
+                  "key": "correo",
+                  "value": "leo{{sufijo}}@mail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "nombreUsuario",
+                  "value": "otro{{sufijo}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Campeon2022",
+                  "type": "text"
+                },
+                {
+                  "key": "fechaNacimiento",
+                  "value": "1990-01-01",
+                  "type": "text"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Registro - datos inválidos (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Devuelve la lista de errores', () => pm.expect(pm.response.json().message).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/registro",
+            "description": "Correo sin formato, contraseña débil, fecha inválida y un campo no permitido.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "nombre",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "apellido",
+                  "value": "Messi",
+                  "type": "text"
+                },
+                {
+                  "key": "correo",
+                  "value": "no-es-un-correo",
+                  "type": "text"
+                },
+                {
+                  "key": "nombreUsuario",
+                  "value": "a",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "corta",
+                  "type": "text"
+                },
+                {
+                  "key": "fechaNacimiento",
+                  "value": "ayer",
+                  "type": "text"
+                },
+                {
+                  "key": "perfil",
+                  "value": "administrador",
+                  "type": "text"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Login - con nombre de usuario (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve los datos del usuario', () => pm.expect(pm.response.json().usuario).to.have.property('correo'));",
+                  "pm.collectionVariables.set('token', pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"leo{{sufijo}}\",\n  \"password\": \"Campeon2022\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Login - con correo (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"leo{{sufijo}}@mail.com\",\n  \"password\": \"Campeon2022\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Login - credenciales incorrectas (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"leo{{sufijo}}\",\n  \"password\": \"Incorrecta1\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Login - datos inválidos (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"\",\n  \"password\": \"123\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Login - administrador de ejemplo (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Perfil administrador', () => pm.expect(pm.response.json().usuario.perfil).to.eql('administrador'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "description": "Requiere haber importado db/sprint-1/usuarios.seed.json.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"admin\",\n  \"password\": \"Admin1234\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Autorizar - token válido (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve los datos del usuario', () => pm.expect(pm.response.json().usuario).to.have.property('nombreUsuario'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/autorizar",
+            "description": "Header Authorization: Bearer {{token}}."
+          }
+        },
+        {
+          "name": "Autorizar - sin token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/autorizar",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Autorizar - token inválido (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/autorizar",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "no.es.un-token",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refrescar (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const token = pm.response.json().token;",
+                  "const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));",
+                  "pm.test('Vence a los 15 minutos', () => pm.expect(payload.exp - payload.iat).to.eql(900));",
+                  "pm.collectionVariables.set('token', token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/refrescar"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Publicaciones",
+      "item": [
+        {
+          "name": "Crear publicación (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "const p = pm.response.json().publicacion;",
+                  "pm.test('Relacionada al usuario', () => pm.expect(p.autor).to.have.property('nombreUsuario'));",
+                  "pm.collectionVariables.set('publicacionId', p._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/publicaciones",
+            "description": "multipart/form-data. imagen es opcional (JPG, PNG, WEBP o GIF, máx. 5 MB).",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "titulo",
+                  "value": "Fondo del domingo",
+                  "type": "text"
+                },
+                {
+                  "key": "mensaje",
+                  "value": "21 km a ritmo suave. ¡Gran día para correr!",
+                  "type": "text"
+                },
+                {
+                  "key": "imagen",
+                  "type": "file",
+                  "src": [],
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear publicación - inválida (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/publicaciones",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "titulo",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear publicación - sin token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/publicaciones",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "titulo",
+                  "value": "x",
+                  "type": "text"
+                },
+                {
+                  "key": "mensaje",
+                  "value": "x",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar - por fecha, paginado (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test('Respeta limit', () => pm.expect(r.publicaciones.length).to.be.at.most(5));",
+                  "pm.test('Informa el total', () => pm.expect(r.total).to.be.a('number'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/publicaciones?orden=fecha&offset=0&limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "publicaciones"
+              ],
+              "query": [
+                {
+                  "key": "orden",
+                  "value": "fecha"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar - por cantidad de me gusta (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const l = pm.response.json().publicaciones.map(p => p.cantidadMeGusta);",
+                  "pm.test('Ordenado de mayor a menor', () => pm.expect(l).to.eql([...l].sort((a, b) => b - a)));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/publicaciones?orden=meGusta&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "publicaciones"
+              ],
+              "query": [
+                {
+                  "key": "orden",
+                  "value": "meGusta"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar - parámetros inválidos (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/publicaciones?orden=otro&limit=500",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "publicaciones"
+              ],
+              "query": [
+                {
+                  "key": "orden",
+                  "value": "otro"
+                },
+                {
+                  "key": "limit",
+                  "value": "500"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener una publicación (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}"
+          }
+        },
+        {
+          "name": "Obtener - id inválido (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/publicaciones/123"
+          }
+        },
+        {
+          "name": "Dar me gusta (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('meGustaYo = true', () => pm.expect(pm.response.json().meGustaYo).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}/me-gusta"
+          }
+        },
+        {
+          "name": "Dar me gusta - repetido (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409 Conflict', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}/me-gusta"
+          }
+        },
+        {
+          "name": "Quitar me gusta (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('meGustaYo = false', () => pm.expect(pm.response.json().meGustaYo).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}/me-gusta"
+          }
+        },
+        {
+          "name": "Quitar me gusta - sin haberlo dado (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409 Conflict', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}/me-gusta"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comentarios",
+      "item": [
+        {
+          "name": "Comentar (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "const com = pm.response.json().comentario;",
+                  "pm.test('Tiene usuario y fecha', () => { pm.expect(com.autor).to.have.property('nombreUsuario'); pm.expect(com.createdAt).to.be.a('string'); });",
+                  "pm.collectionVariables.set('comentarioId', com._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}/comentarios",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mensaje\": \"¡Qué buen ritmo!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Comentar - vacío (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}/comentarios",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mensaje\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar comentarios - paginado, recientes primero (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const l = pm.response.json().comentarios.map(c => c.createdAt);",
+                  "pm.test('Más recientes primero', () => pm.expect(l).to.eql([...l].sort().reverse()));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/publicaciones/{{publicacionId}}/comentarios?offset=0&limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "publicaciones",
+                "{{publicacionId}}",
+                "comentarios"
+              ],
+              "query": [
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Editar comentario (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Marcado como modificado', () => pm.expect(pm.response.json().comentario.modificado).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}/comentarios/{{comentarioId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mensaje\": \"¡Qué buen ritmo! Sos una máquina.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Editar comentario ajeno (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}/comentarios/{{comentarioId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenOtro}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mensaje\": \"No es mío\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eliminar publicación",
+      "item": [
+        {
+          "name": "Eliminar - otro usuario (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenOtro}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eliminar - autor, baja lógica (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}"
+          }
+        },
+        {
+          "name": "Obtener eliminada (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 Not Found', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/publicaciones/{{publicacionId}}"
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  }
+}

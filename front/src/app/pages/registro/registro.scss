@@ -1,0 +1,54 @@
+.foto {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  label.btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+.quitar {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--danger);
+  font: 600 0.8rem var(--font);
+  cursor: pointer;
+}
+
+.reglas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  color: var(--muted);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  li.ok {
+    color: var(--success);
+  }
+}
+
+.contador {
+  align-self: flex-end;
+}

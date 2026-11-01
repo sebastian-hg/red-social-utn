@@ -1,0 +1,338 @@
+// Estilos globales de Arena: tokens de diseño y componentes base reutilizables.
+
+:root {
+  --bg: #0b0f14;
+  --surface: #121921;
+  --surface-2: #19222c;
+  --border: #23303d;
+  --text: #e8edf2;
+  --muted: #8b98a5;
+  --lime: #c6f432;
+  --lime-dark: #a8d41a;
+  --orange: #ff6b2c;
+  --danger: #ff4d5e;
+  --success: #2fd38a;
+  --gradient: linear-gradient(135deg, var(--orange) 0%, #ffb800 50%, var(--lime) 100%);
+  --radius: 16px;
+  --shadow: 0 12px 40px rgb(0 0 0 / 0.45);
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Bebas Neue', 'Impact', 'Arial Narrow', sans-serif;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--lime);
+  text-decoration: none;
+  font-weight: 600;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+img {
+  max-width: 100%;
+}
+
+.display {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  font-weight: 400;
+}
+
+// ---------- Botones ----------
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  font: 700 0.95rem var(--font);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.2s ease, opacity 0.2s ease;
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background: var(--lime);
+  color: #0b0f14;
+  &:hover:not(:disabled) {
+    background: var(--lime-dark);
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+  &:hover:not(:disabled) {
+    background: var(--surface-2);
+  }
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ---------- Formularios ----------
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+
+  label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+}
+
+.input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  color: var(--text);
+  font: 500 0.95rem var(--font);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: #5d6b78;
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--lime);
+    box-shadow: 0 0 0 3px rgb(198 244 50 / 0.15);
+  }
+  &.invalido {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgb(255 77 94 / 0.12);
+  }
+}
+
+textarea.input {
+  resize: vertical;
+  min-height: 84px;
+}
+
+// Input con un botón (mostrar contraseña) dentro.
+.con-boton {
+  position: relative;
+
+  .input {
+    padding-right: 2.75rem;
+  }
+}
+
+.ver-password {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  padding: 0.35rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  &:hover {
+    color: var(--text);
+  }
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.ayuda {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+// ---------- Tarjetas ----------
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.estado-vacio {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--muted);
+
+  h3 {
+    color: var(--text);
+    margin: 0.75rem 0 0.35rem;
+  }
+  p {
+    margin: 0 0 1.25rem;
+  }
+}
+
+// ---------- Pantallas de autenticación ----------
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+}
+
+.auth-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    radial-gradient(circle at 20% 20%, rgb(255 107 44 / 0.35), transparent 45%),
+    radial-gradient(circle at 80% 75%, rgb(198 244 50 / 0.25), transparent 50%),
+    repeating-linear-gradient(115deg, transparent 0 38px, rgb(255 255 255 / 0.025) 38px 40px),
+    #0e141b;
+  border-right: 1px solid var(--border);
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 0.92;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+  h1 span {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  p {
+    color: var(--muted);
+    max-width: 30rem;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+}
+
+.auth-logo {
+  font-size: 2rem;
+  color: var(--text);
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.auth-deportes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+
+  span {
+    border: 1px solid var(--border);
+    background: rgb(255 255 255 / 0.04);
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+.auth-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.auth-form {
+  width: 100%;
+  max-width: 440px;
+
+  h2 {
+    font-size: 1.9rem;
+    margin: 0 0 0.25rem;
+  }
+  > p {
+    color: var(--muted);
+    margin: 0 0 1.75rem;
+  }
+}
+
+.auth-pie {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.fila-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+  .auth-hero {
+    padding: 2rem 1.5rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .fila-2 {
+    grid-template-columns: 1fr;
+  }
+}
