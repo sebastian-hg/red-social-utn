@@ -1,0 +1,47 @@
+<section class="dashboard">
+  <header><div><span class="eyebrow">Administración</span><h1>Usuarios</h1></div></header>
+  <div class="grid">
+    <form class="card formulario" [formGroup]="form" (ngSubmit)="crear()">
+      <h2>Nuevo usuario</h2>
+      <div class="dos-columnas">
+        <label>Nombre<input formControlName="nombre" placeholder="Ej: Sebastián"></label>
+        <label>Apellido<input formControlName="apellido" placeholder="Ej: Hernández"></label>
+      </div>
+      <label>Correo<input type="email" formControlName="correo" placeholder="usuario@correo.com"></label>
+      <label>Nombre de usuario<input formControlName="nombreUsuario" placeholder="sebastian"></label>
+      <div class="dos-columnas">
+        <label>Contraseña<input type="password" formControlName="password" placeholder="Mínimo 8 caracteres"></label>
+        <label>Repetir contraseña<input type="password" formControlName="repetirPassword" placeholder="Repetir contraseña"></label>
+      </div>
+      <label>Fecha de nacimiento<input type="date" [max]="hoy" formControlName="fechaNacimiento"></label>
+      <label>Descripción<textarea rows="3" formControlName="descripcion" placeholder="Descripción opcional"></textarea></label>
+      <fieldset>
+        <legend>Perfil</legend>
+        <label><input type="radio" formControlName="perfil" value="usuario"><span><strong>Usuario</strong><small>Acceso estándar</small></span></label>
+        <label><input type="radio" formControlName="perfil" value="administrador"><span><strong>Administrador</strong><small>Acceso completo</small></span></label>
+      </fieldset>
+      @if (form.value.password && form.value.password !== form.value.repetirPassword) {
+        <p class="error-texto">Las contraseñas no coinciden.</p>
+      }
+      <button class="btn btn-primary" [disabled]="creando()">Crear usuario</button>
+    </form>
+
+    <div class="card listado">
+      <h2>Usuarios registrados</h2>
+      @for (usuario of usuarios(); track usuario._id) {
+        <article [appSoloActivos]="usuario.activo !== false">
+          <div class="avatar">{{ usuario.nombre | iniciales:usuario.apellido }}</div>
+          <div class="datos-usuario">
+            <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>
+            <small>{{ usuario.correo }}</small>
+            <span class="perfil">{{ usuario.perfil }}</span>
+          </div>
+          <span class="estado" [class.inactivo]="usuario.activo === false">{{ usuario.activo === false ? 'Deshabilitado' : 'Activo' }}</span>
+          <button class="btn btn-ghost" (click)="cambiarEstado(usuario)">
+            {{ usuario.activo === false ? 'Habilitar' : 'Deshabilitar' }}
+          </button>
+        </article>
+      }
+    </div>
+  </div>
+</section>

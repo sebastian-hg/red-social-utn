@@ -1,0 +1,12 @@
+{
+  "name": "Arena Red Social",
+  "short_name": "Arena",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "description": "Red social deportiva Arena",
+  "icons": [
+    { "src": "arena-favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

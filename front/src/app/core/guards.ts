@@ -18,3 +18,10 @@ export const invitadoGuard: CanActivateFn = async () => {
   await inject(SesionService).inicio;
   return !auth.logueado() || router.parseUrl('/publicaciones');
 };
+
+export const administradorGuard: CanActivateFn = async () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  await inject(SesionService).inicio;
+  return auth.esAdmin() || router.parseUrl('/publicaciones');
+};

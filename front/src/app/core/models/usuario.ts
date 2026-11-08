@@ -12,6 +12,7 @@ export interface Usuario {
   perfil: Perfil;
   createdAt: string;
   updatedAt: string;
+  activo?: boolean;
 }
 
 export interface RespuestaAuth {

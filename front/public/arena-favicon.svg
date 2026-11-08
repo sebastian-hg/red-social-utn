@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Arena favicon</title>
+  <defs>
+    <linearGradient id="arena" x1="8" y1="58" x2="56" y2="6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff5c35"/>
+      <stop offset="1" stop-color="#c9f43d"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".45"/>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="#0b0f14"/>
+  <path d="M32 6 53 17v18c0 13-8 20-21 24C19 55 11 48 11 35V17L32 6Z"
+        fill="#151b22" stroke="url(#arena)" stroke-width="3.5"
+        stroke-linejoin="round" filter="url(#shadow)"/>
+  <path d="M20.5 46 32 17l11.5 29" fill="none" stroke="#fff"
+        stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M25 36h14" fill="none" stroke="url(#arena)"
+        stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="32" cy="46" r="3" fill="#c9f43d"/>
+</svg>

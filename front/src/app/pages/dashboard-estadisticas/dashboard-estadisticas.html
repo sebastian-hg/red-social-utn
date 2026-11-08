@@ -1,0 +1,40 @@
+<section class="estadisticas">
+  <header><span class="eyebrow">Administración</span><h1>Estadísticas</h1></header>
+  <p>Período seleccionado: {{ formatoInput(desde) }} — {{ formatoInput(hasta) }}</p>
+  <form class="filtros" (ngSubmit)="cargar()">
+    <label>Desde<input type="text" [value]="formatoInput(desde)" (blur)="setDesde($event)" name="desde" placeholder="dd/mm/aaaa" maxlength="10"></label>
+    <label>Hasta<input type="text" [value]="formatoInput(hasta)" (blur)="setHasta($event)" name="hasta" placeholder="dd/mm/aaaa" maxlength="10"></label>
+    <button class="btn btn-primary">Actualizar gráficos</button>
+  </form>
+  <nav class="tabs" aria-label="Tipos de estadísticas">
+    <button type="button" [class.activa]="tabActiva() === 'publicaciones'" (click)="seleccionar('publicaciones')">Publicaciones</button>
+    <button type="button" [class.activa]="tabActiva() === 'comentarios'" (click)="seleccionar('comentarios')">Comentarios por usuario</button>
+    <button type="button" [class.activa]="tabActiva() === 'por-publicacion'" (click)="seleccionar('por-publicacion')">Comentarios por publicación</button>
+  </nav>
+
+  <article class="card grafico-activo">
+    @switch (tabActiva()) {
+      @case ('publicaciones') {
+        <h2>Publicaciones realizadas por usuario</h2>
+        @if (!publicaciones().length) { <p class="sin-datos">No hay publicaciones en el período seleccionado.</p> }
+        @for (dato of publicaciones(); track dato.nombre) {
+          <div class="fila-barra"><span>{{ dato.nombre }}</span><div class="barra"><i [style.width.%]="dato.cantidad / maximo(publicaciones()) * 100"></i></div><b>{{ dato.cantidad }}</b></div>
+        }
+      }
+      @case ('comentarios') {
+        <h2>Comentarios realizados por usuario</h2>
+        @if (!comentarios().length) { <p class="sin-datos">No hay comentarios en el período seleccionado.</p> }
+        @for (dato of comentarios(); track dato.nombre) {
+          <div class="fila-barra"><span>{{ dato.nombre }}</span><div class="barra comentarios"><i [style.width.%]="dato.cantidad / maximo(comentarios()) * 100"></i></div><b>{{ dato.cantidad }}</b></div>
+        }
+      }
+      @case ('por-publicacion') {
+        <h2>Comentarios en cada publicación</h2>
+        @if (!comentariosPublicacion().length) { <p class="sin-datos">No hay comentarios por publicación en el período seleccionado.</p> }
+        @for (dato of comentariosPublicacion(); track dato.titulo) {
+          <div class="fila-barra"><span title="{{ dato.titulo }}">{{ dato.titulo ?? 'Publicación' | truncar:42 }}</span><div class="barra publicaciones"><i [style.width.%]="dato.cantidad / maximo(comentariosPublicacion()) * 100"></i></div><b>{{ dato.cantidad }}</b></div>
+        }
+      }
+    }
+  </article>
+</section>

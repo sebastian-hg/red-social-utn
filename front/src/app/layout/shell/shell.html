@@ -35,6 +35,14 @@
       <a routerLink="/mi-perfil" routerLinkActive="activo">
         <app-icon nombre="usuario" /> Mi perfil
       </a>
+      @if (usuario()?.perfil === 'administrador') {
+        <a routerLink="/dashboard/usuarios" routerLinkActive="activo">
+          <app-icon nombre="usuario" /> Usuarios
+        </a>
+        <a routerLink="/dashboard/estadisticas" routerLinkActive="activo">
+          <app-icon nombre="trofeo" /> Estadísticas
+        </a>
+      }
       @if (usuario()) {
         <button type="button" (click)="salir()"><app-icon nombre="salir" /> Cerrar sesión</button>
       }
