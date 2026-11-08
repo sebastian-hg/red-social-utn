@@ -37,8 +37,9 @@ npm install
 npm start             # http://localhost:4200
 ```
 
-La URL de la API se configura en `src/environments/environment.development.ts` (desarrollo)
-y `src/environments/environment.ts` (producción).
+La URL de la API se configura en `src/environments/environment.ts`.
+Al abrir Angular desde `localhost`, usa el backend local. Desde cualquier dominio desplegado,
+usa la URL pública configurada para Render.
 
 ## Endpoints
 
