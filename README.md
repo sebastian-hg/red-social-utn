@@ -76,8 +76,9 @@ La colección de `postman/` se ejecuta en orden: el login guarda el token y los 
 
 - **Back** (Render, Railway, etc.): build `npm install && npm run build`, start `npm run start:prod`,
   cargar las variables de `.env` en el panel del hosting y poner en `CORS_ORIGIN` la URL del front.
-- **Front** (Vercel, Netlify, Firebase Hosting): poner la URL del back en `src/environments/environment.ts`,
-  build `npm run build`, carpeta de salida `dist/front/browser`. Configurar el rewrite de SPA
+- **Front** (Vercel, Netlify, Firebase Hosting): definir `ARENA_API_URL` con la URL pública del back
+  (sin `/api`), por ejemplo `https://arena-back.onrender.com`. El script de build agrega `/api`.
+- En el hosting configurar el rewrite de SPA
   (todas las rutas → `index.html`) para que funcione la navegación al recargar.
 
 ## Usuario administrador

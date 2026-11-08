@@ -16,3 +16,5 @@ services:
         value: utn
       - key: BASE_URL
         sync: false
+      - key: CORS_ORIGIN
+        sync: false
