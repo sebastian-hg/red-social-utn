@@ -9,7 +9,11 @@ const MONGO_URI_ACTUAL = process.env.MONGO_URI || MONGO_URI;
 
 @Module({
   imports: [
-    MongooseModule.forRoot(MONGO_URI_ACTUAL, { dbName: MONGO_DB }),
+    MongooseModule.forRoot(MONGO_URI_ACTUAL, {
+      dbName: MONGO_DB,
+      serverSelectionTimeoutMS: 10_000,
+      connectTimeoutMS: 10_000,
+    }),
     UsuariosModule,
     AuthModule,
     PublicacionesModule,

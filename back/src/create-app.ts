@@ -4,13 +4,15 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import { join } from 'node:path';
 import { AppModule } from './app.module.js';
-import { CORS_ORIGIN } from './configuracion.js';
+import { NormalizadorImagenesInterceptor } from './common/imagenes.js';
+import { BASE_URL, CORS_ORIGIN } from './configuracion.js';
 
 export async function crearAplicacion(): Promise<INestApplication> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.setGlobalPrefix('api');
   app.use(cookieParser());
+  app.useGlobalInterceptors(new NormalizadorImagenesInterceptor(BASE_URL));
   const origenesPermitidos = CORS_ORIGIN.split(',')
     .map((origen) => origen.trim().replace(/\/$/, ''))
     .filter(Boolean);

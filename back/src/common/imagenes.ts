@@ -1,8 +1,15 @@
-import { BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface.js';
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { map, Observable } from 'rxjs';
 
 const EXTENSIONES: Record<string, string> = {
   'image/jpeg': 'jpg',
@@ -35,4 +42,55 @@ export async function guardarImagen(
   await mkdir(directorio, { recursive: true });
   await writeFile(join(directorio, nombre), archivo.buffer);
   return `${baseUrl}/uploads/${carpeta}/${nombre}`;
+}
+
+export function normalizarUrlImagen(url: string | null | undefined, baseUrl: string): string | null {
+  if (!url) return url ?? null;
+  const indice = url.indexOf('/uploads/');
+  if (indice === -1) return url;
+
+  return `${baseUrl.replace(/\/$/, '')}${url.slice(indice)}`;
+}
+
+function normalizarUrls(value: unknown, baseUrl: string): unknown {
+  if (typeof value === 'string') {
+    return value.includes('/uploads/') ? normalizarUrlImagen(value, baseUrl) : value;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizarUrls(item, baseUrl));
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([clave, item]) => [
+        clave,
+        normalizarUrls(item, baseUrl),
+      ]),
+    );
+  }
+  return value;
+}
+
+@Injectable()
+export class NormalizadorImagenesInterceptor implements NestInterceptor {
+  constructor(private readonly baseUrl: string) {}
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const request = context.switchToHttp().getRequest<{
+      headers: Record<string, string | string[] | undefined>;
+      protocol?: string;
+    }>();
+    const protocolo = request.headers['x-forwarded-proto']?.toString()
+      || request.protocol
+      || 'http';
+    const host = request.headers['x-forwarded-host']?.toString()
+      || request.headers.host?.toString()
+      || '';
+    const baseUrl = host && !host.includes('localhost')
+      ? `${protocolo}://${host}`
+      : this.baseUrl;
+
+    return next.handle().pipe(
+      map((respuesta) => normalizarUrls(respuesta, baseUrl)),
+    );
+  }
 }

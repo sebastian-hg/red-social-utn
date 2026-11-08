@@ -5,3 +5,11 @@ coverage/
 uploads/**
 !uploads/**/
 !uploads/**/.gitkeep
+!uploads/perfiles/*.jpg
+!uploads/perfiles/*.jpeg
+!uploads/perfiles/*.png
+!uploads/perfiles/*.webp
+!uploads/publicaciones/*.jpg
+!uploads/publicaciones/*.jpeg
+!uploads/publicaciones/*.png
+!uploads/publicaciones/*.webp

@@ -3,6 +3,8 @@
   "buildCommand": "npm run build",
   "rewrites": [
     { "source": "/api/health", "destination": "/api/health" },
+    { "source": "/uploads/(.*)", "destination": "/api" },
+    { "source": "/api/(.*)", "has": [{ "type": "header", "key": "access-control-request-method" }], "destination": "/api/cors" },
     { "source": "/api/(.*)", "destination": "/api" }
   ],
   "functions": {
