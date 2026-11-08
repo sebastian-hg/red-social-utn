@@ -1,5 +1,5 @@
 <main class="auth-page">
-  <section class="auth-hero">
+  <section class="auth-hero auth-hero-registro">
     <a routerLink="/publicaciones" class="auth-logo display">ARENA</a>
     <div>
       <h1>Sumate al<br /><span>equipo.</span></h1>
@@ -69,7 +69,7 @@
           placeholder="nombre@correo.com" [class.invalido]="invalido('correo')" />
         @if (invalido('correo')) {
           <span class="error">
-            {{ error('correo', 'required') ? 'El correo es obligatorio.' : 'Ingresá un correo válido.' }}
+            {{ error('correo', 'required') ? 'El correo es obligatorio.' : error('correo', 'correoSinCom') ? 'Debe ingresar un formato válido' : 'Ingresá un correo válido.' }}
           </span>
         }
       </div>

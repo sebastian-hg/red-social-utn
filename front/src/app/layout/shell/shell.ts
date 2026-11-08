@@ -19,6 +19,10 @@ export class Shell {
   private readonly router = inject(Router);
   protected readonly usuario = this.auth.usuario;
 
+  protected esRuta(ruta: string): boolean {
+    return this.router.url === ruta || this.router.url.startsWith(`${ruta}/`);
+  }
+
   protected readonly deportes = [
     { emoji: '⚽', nombre: 'Fútbol' },
     { emoji: '🏀', nombre: 'Básquet' },

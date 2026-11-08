@@ -7,7 +7,12 @@
         <label>Nombre<input formControlName="nombre" placeholder="Ej: Sebastián"></label>
         <label>Apellido<input formControlName="apellido" placeholder="Ej: Hernández"></label>
       </div>
-      <label>Correo<input type="email" formControlName="correo" placeholder="usuario@correo.com"></label>
+      <label>
+        Correo<input type="email" formControlName="correo" placeholder="usuario@correo.com">
+        @if (form.controls.correo.touched && form.controls.correo.hasError('correoSinCom')) {
+          <small class="error-texto">Debe ingresar un formato válido</small>
+        }
+      </label>
       <label>Nombre de usuario<input formControlName="nombreUsuario" placeholder="sebastian"></label>
       <div class="dos-columnas">
         <label>Contraseña<input type="password" formControlName="password" placeholder="Mínimo 8 caracteres"></label>

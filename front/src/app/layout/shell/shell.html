@@ -1,4 +1,4 @@
-<header class="barra">
+<header class="barra" [class.fondo-publicaciones]="esRuta('/publicaciones')" [class.fondo-perfil]="esRuta('/mi-perfil')" [class.fondo-varias]="!esRuta('/publicaciones') && !esRuta('/mi-perfil')">
   <a routerLink="/publicaciones" class="logo display">ARENA</a>
 
   <nav class="nav-central">

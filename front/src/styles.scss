@@ -263,6 +263,18 @@ textarea.input {
   }
 }
 
+.auth-hero-login {
+  background:
+    linear-gradient(135deg, rgb(8 12 18 / 0.72), rgb(8 12 18 / 0.18)),
+    url('/fondos/login.jpeg') center / cover no-repeat;
+}
+
+.auth-hero-registro {
+  background:
+    linear-gradient(135deg, rgb(8 12 18 / 0.72), rgb(8 12 18 / 0.18)),
+    url('/fondos/registro.jpeg') center / cover no-repeat;
+}
+
 .auth-logo {
   font-size: 2rem;
   color: var(--text);

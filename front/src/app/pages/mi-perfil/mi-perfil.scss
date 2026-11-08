@@ -10,8 +10,8 @@
 .portada {
   height: 180px;
   background:
-    repeating-linear-gradient(115deg, transparent 0 30px, rgb(255 255 255 / 0.06) 30px 32px),
-    linear-gradient(120deg, var(--orange), #ffb800 55%, var(--lime));
+    linear-gradient(120deg, rgb(11 15 20 / 0.15), rgb(11 15 20 / 0.55)),
+    url('/fondos/perfil.jpeg') center 35% / cover no-repeat;
 }
 
 .cabecera {

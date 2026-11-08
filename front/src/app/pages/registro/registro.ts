@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { mensajesDeError } from '../../core/errores';
 import { AuthService } from '../../core/services/auth.service';
 import { ModalService } from '../../core/services/modal.service';
-import { PASSWORD_REGEX, coincide, fechaPasada } from '../../core/validadores';
+import { PASSWORD_REGEX, coincide, correoCom, fechaPasada } from '../../core/validadores';
 import { Avatar } from '../../shared/avatar/avatar';
 import { Icon } from '../../shared/icon/icon';
 
@@ -45,7 +45,7 @@ export class Registro {
     {
       nombre: ['', [Validators.required, Validators.maxLength(50)]],
       apellido: ['', [Validators.required, Validators.maxLength(50)]],
-      correo: ['', [Validators.required, Validators.email]],
+      correo: ['', [Validators.required, Validators.email, correoCom]],
       nombreUsuario: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9_.]{3,20}$/)]],
       password: ['', [Validators.required, Validators.pattern(PASSWORD_REGEX)]],
       repetirPassword: ['', Validators.required],

@@ -12,6 +12,29 @@
   border-bottom: 1px solid var(--border);
 }
 
+:host {
+  min-height: 100vh;
+  display: block;
+  background: #0b0f14 url('/fondos/varias2.jpeg') center / cover fixed;
+}
+
+:host::before {
+  content: '';
+  position: fixed;
+  inset: 64px 0 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgb(11 15 20 / 0.76), rgb(11 15 20 / 0.92)),
+    url('/fondos/varias.jpeg') center / cover fixed;
+}
+
+:host:has(.barra.fondo-perfil)::before {
+  background:
+    linear-gradient(180deg, rgb(11 15 20 / 0.72), rgb(11 15 20 / 0.92)),
+    url('/fondos/perfil.jpeg') center / cover fixed;
+}
+
 .logo {
   justify-self: start;
   font-size: 1.9rem;
@@ -76,6 +99,8 @@
 }
 
 .layout {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 240px minmax(620px, 900px) 300px;
   justify-content: center;

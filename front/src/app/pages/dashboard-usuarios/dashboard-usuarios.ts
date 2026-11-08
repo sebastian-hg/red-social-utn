@@ -4,6 +4,7 @@ import { mensajesDeError } from '../../core/errores';
 import { Usuario } from '../../core/models/usuario';
 import { AdminService } from '../../core/services/admin.service';
 import { ModalService } from '../../core/services/modal.service';
+import { correoCom } from '../../core/validadores';
 import { InicialesPipe } from '../../shared/pipes/iniciales.pipe';
 import { SoloActivosDirective } from '../../shared/directivas/solo-activos.directive';
 
@@ -23,7 +24,7 @@ export class DashboardUsuarios {
   protected readonly form = inject(FormBuilder).nonNullable.group({
     nombre: ['', [Validators.required, Validators.maxLength(50)]],
     apellido: ['', [Validators.required, Validators.maxLength(50)]],
-    correo: ['', [Validators.required, Validators.email]],
+    correo: ['', [Validators.required, Validators.email, correoCom]],
     nombreUsuario: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9_.]{3,20}$/)]],
     password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{8,}$/)]],
     repetirPassword: ['', Validators.required],

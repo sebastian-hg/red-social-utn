@@ -2,6 +2,11 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
+export function correoCom(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+  return /^[^\s@]+@[^\s@]+\.com$/i.test(control.value) ? null : { correoSinCom: true };
+}
+
 /** Marca el control "repetir" con el error `noCoincide` si difiere del original. */
 export function coincide(original: string, repetir: string): ValidatorFn {
   return (grupo: AbstractControl): ValidationErrors | null => {

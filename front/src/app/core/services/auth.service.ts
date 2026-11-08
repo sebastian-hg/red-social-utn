@@ -4,7 +4,8 @@ import { Observable, finalize, map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { RespuestaAuth, Usuario } from '../models/usuario';
 
-const DURACION_SESION_MS = 15 * 60 * 1000;
+const DURACION_SESION_MS =
+  environment.minutosSesion * 60 * 1000;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -45,6 +46,10 @@ export class AuthService {
 
   logout(): Observable<void> {
     return this.http.post<void>(`${this.url}/logout`, {}).pipe(finalize(() => this.limpiarSesion()));
+  }
+
+  limpiarSesionLocal(): void {
+    this.limpiarSesion();
   }
 
   vencimiento(): number | null {
