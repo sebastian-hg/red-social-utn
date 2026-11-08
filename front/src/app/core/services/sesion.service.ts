@@ -1,4 +1,5 @@
 import { Injectable, effect, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -42,8 +43,10 @@ export class SesionService {
     const espera = new Promise((resolver) => setTimeout(resolver, DURACION_MINIMA_CARGA));
     try {
       await firstValueFrom(this.auth.autorizar());
-    } catch {
-      this.expirar('Tu sesión venció. Volvé a iniciar sesión para continuar.');
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        this.expirar('Tu sesión venció. Volvé a iniciar sesión para continuar.');
+      }
     }
     await espera;
     this.lista.set(true);

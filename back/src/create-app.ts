@@ -17,7 +17,7 @@ export async function crearAplicacion(): Promise<INestApplication> {
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin || origenesPermitidos.includes('*')) {
-        callback(null, true);
+        callback(null, origin || true);
         return;
       }
 
