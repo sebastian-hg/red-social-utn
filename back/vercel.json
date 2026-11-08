@@ -2,9 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "rewrites": [
+    { "source": "/api/health", "destination": "/api/health" },
     { "source": "/api/(.*)", "destination": "/api" }
   ],
   "functions": {
+    "api/health.ts": {
+      "maxDuration": 10
+    },
     "api/index.ts": {
       "maxDuration": 30
     }
