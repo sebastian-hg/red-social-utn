@@ -3,18 +3,11 @@
   "buildCommand": "npm run build",
   "rewrites": [
     { "source": "/api/health", "destination": "/api/health" },
-    { "source": "/uploads/(.*)", "destination": "/api/imagen?ruta=$1" },
-    { "source": "/api/imagen", "destination": "/api/imagen" },
-    { "source": "/api/(.*)", "has": [{ "type": "header", "key": "access-control-request-method" }], "destination": "/api/cors" },
     { "source": "/api/(.*)", "destination": "/api" }
   ],
   "functions": {
     "api/health.ts": {
       "maxDuration": 10
-    },
-    "api/imagen.ts": {
-      "maxDuration": 10,
-      "includeFiles": "uploads/**"
     },
     "api/index.ts": {
       "maxDuration": 30
