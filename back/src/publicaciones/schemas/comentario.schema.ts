@@ -17,6 +17,9 @@ export class Comentario {
   /** true cuando el autor editó el comentario. */
   @Prop({ default: false })
   modificado: boolean;
+
+  @Prop({ default: true })
+  activa: boolean;
 }
 
 export type ComentarioDocument = HydratedDocument<Comentario>;

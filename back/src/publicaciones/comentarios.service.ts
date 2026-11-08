@@ -26,7 +26,7 @@ export class ComentariosService {
   /** Comentarios de una publicación, los más recientes primero. */
   async listar(publicacionId: Types.ObjectId, paginacion: PaginacionDto) {
     await this.publicacionesService.asegurarQueExiste(publicacionId);
-    const filtro = { publicacion: publicacionId };
+    const filtro = { publicacion: publicacionId, activa: { $ne: false } };
     const [total, comentarios] = await Promise.all([
       this.comentarioModel.countDocuments(filtro),
       this.comentarioModel
@@ -54,6 +54,7 @@ export class ComentariosService {
       publicacion: publicacionId,
       autor: new Types.ObjectId(autorId),
       mensaje: dto.mensaje,
+      activa: true,
     });
     return comentario.populate(AUTOR);
   }
@@ -69,6 +70,7 @@ export class ComentariosService {
     const comentario = await this.comentarioModel.findOne({
       _id: comentarioId,
       publicacion: publicacionId,
+      activa: { $ne: false },
     });
     if (!comentario) throw new NotFoundException('El comentario no existe');
     if (!comentario.autor.equals(usuarioId)) {

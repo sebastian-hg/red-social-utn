@@ -44,6 +44,9 @@ export class Usuario {
 
   @Prop({ type: String, enum: Perfil, default: Perfil.Usuario })
   perfil: Perfil;
+
+  @Prop({ default: true })
+  activo: boolean;
 }
 
 export type UsuarioDocument = HydratedDocument<Usuario>;

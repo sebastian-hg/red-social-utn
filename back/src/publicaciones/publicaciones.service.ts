@@ -13,6 +13,7 @@ import { Perfil } from '../usuarios/schemas/usuario.schema.js';
 import { CrearPublicacionDto } from './dto/crear-publicacion.dto.js';
 import { ListarPublicacionesDto } from './dto/listar-publicaciones.dto.js';
 import { Publicacion } from './schemas/publicacion.schema.js';
+import { Comentario } from './schemas/comentario.schema.js';
 
 export const CAMPOS_AUTOR = {
   nombre: 1,
@@ -27,6 +28,8 @@ export class PublicacionesService {
   constructor(
     @InjectModel(Publicacion.name)
     private readonly publicacionModel: Model<Publicacion>,
+    @InjectModel(Comentario.name)
+    private readonly comentarioModel: Model<Comentario>,
   ) {}
 
   async listar(filtro: ListarPublicacionesDto, usuarioId: string) {
@@ -109,6 +112,10 @@ export class PublicacionesService {
     }
     publicacion.activa = false;
     await publicacion.save();
+    await this.comentarioModel.updateMany(
+      { publicacion: id },
+      { $set: { activa: false } },
+    );
   }
 
   async darMeGusta(id: Types.ObjectId, usuarioId: string) {
@@ -171,7 +178,10 @@ export class PublicacionesService {
           localField: '_id',
           foreignField: 'publicacion',
           as: 'comentarios',
-          pipeline: [{ $count: 'n' }],
+          pipeline: [
+            { $match: { activa: { $ne: false } } },
+            { $count: 'n' },
+          ],
         },
       },
       {

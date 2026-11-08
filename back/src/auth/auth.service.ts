@@ -50,6 +50,9 @@ export class AuthService {
     if (!usuario || !(await bcrypt.compare(dto.password, usuario.password))) {
       throw new UnauthorizedException('Usuario o contraseña incorrectos');
     }
+    if (!usuario.activo) {
+      throw new UnauthorizedException('Tu usuario está deshabilitado. Contactá a un administrador.');
+    }
     return this.sesion(usuario);
   }
 
@@ -58,6 +61,9 @@ export class AuthService {
     const usuario = await this.usuariosService.buscarPorId(payload.sub);
     if (!usuario) {
       throw new UnauthorizedException('El usuario del token ya no existe');
+    }
+    if (!usuario.activo) {
+      throw new UnauthorizedException('Tu usuario está deshabilitado');
     }
     return usuario.toJSON();
   }
