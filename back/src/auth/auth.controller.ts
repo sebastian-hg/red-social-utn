@@ -89,8 +89,8 @@ export class AuthController {
   private opcionesCookie(): CookieOptions {
     return {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
     };
   }

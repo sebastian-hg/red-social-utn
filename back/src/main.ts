@@ -4,7 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import { join } from 'node:path';
 import { AppModule } from './app.module.js';
-import { CORS_ORIGIN, PORT } from './configuracion.js';
+import { PORT } from './configuracion.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -12,7 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(cookieParser());
   app.enableCors({
-    origin: CORS_ORIGIN.split(','),
+    origin: true,
     credentials: true,
   });
   app.useGlobalPipes(

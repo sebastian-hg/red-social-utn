@@ -8,7 +8,7 @@ export interface PayloadJwt {
   perfil: Perfil;
 }
 
-export const DURACION_TOKEN = '15m';
+export const DURACION_TOKEN = '2m';
 export const NOMBRE_COOKIE_AUTH = 'arena_token';
 
 const factoresDuracion = {
