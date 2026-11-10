@@ -1,7 +1,7 @@
 <section class="dashboard">
   <header><div><span class="eyebrow">Administración</span><h1>Usuarios</h1></div></header>
   <div class="grid">
-    <form class="card formulario" [formGroup]="form" (ngSubmit)="crear()">
+    <form class="card formulario" [formGroup]="form" (ngSubmit)="crear()" autocomplete="off">
       <h2>Nuevo usuario</h2>
       <div class="dos-columnas">
         <label>Nombre<input formControlName="nombre" placeholder="Ej: Sebastián"></label>
@@ -13,10 +13,10 @@
           <small class="error-texto">Debe ingresar un formato válido</small>
         }
       </label>
-      <label>Nombre de usuario<input formControlName="nombreUsuario" placeholder="sebastian"></label>
+      <label>Nombre de usuario<input formControlName="nombreUsuario" placeholder="sebastian" autocomplete="off"></label>
       <div class="dos-columnas">
-        <label>Contraseña<input type="password" formControlName="password" placeholder="Mínimo 8 caracteres"></label>
-        <label>Repetir contraseña<input type="password" formControlName="repetirPassword" placeholder="Repetir contraseña"></label>
+        <label>Contraseña<input type="password" formControlName="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password"></label>
+        <label>Repetir contraseña<input type="password" formControlName="repetirPassword" placeholder="Repetir contraseña" autocomplete="new-password"></label>
       </div>
       <label>Fecha de nacimiento<input type="date" [max]="hoy" formControlName="fechaNacimiento"></label>
       <label>Descripción<textarea rows="3" formControlName="descripcion" placeholder="Descripción opcional"></textarea></label>

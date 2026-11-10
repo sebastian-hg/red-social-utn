@@ -32,7 +32,7 @@ export class DashboardUsuarios {
     repetirPassword: ['', Validators.required],
     fechaNacimiento: ['', Validators.required],
     descripcion: ['', Validators.maxLength(200)],
-    perfil: ['usuario' as 'usuario' | 'administrador', Validators.required],
+    perfil: ['' as 'usuario' | 'administrador' | '', Validators.required],
   });
 
   constructor() {
@@ -53,7 +53,7 @@ export class DashboardUsuarios {
     this.admin.crear(datos).subscribe({
       next: () => {
         this.creando.set(false);
-        this.form.reset({ perfil: 'usuario' });
+        this.form.reset();
         this.cargar();
         this.modal.abrir({ tipo: 'exito', titulo: 'Usuario creado', mensaje: 'La cuenta quedó habilitada.' });
       },
