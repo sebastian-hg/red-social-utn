@@ -41,7 +41,14 @@
             <small>{{ usuario.correo }}</small>
             <span class="perfil">{{ usuario.perfil }}</span>
           </div>
-          <span class="estado" [class.inactivo]="usuario.activo === false">{{ usuario.activo === false ? 'Deshabilitado' : 'Activo' }}</span>
+          <span
+            class="estado"
+            [class.inactivo]="usuario.activo === false"
+            [appResaltar]="usuario.activo === false ? '#fef2f2' : '#f0fdf4'"
+            [appTooltip]="usuario.activo === false ? 'La cuenta está deshabilitada' : 'La cuenta está habilitada'"
+          >
+            {{ usuario.activo === false ? 'Deshabilitado' : 'Activo' }}
+          </span>
           <button class="btn btn-ghost" (click)="cambiarEstado(usuario)">
             {{ usuario.activo === false ? 'Habilitar' : 'Deshabilitar' }}
           </button>

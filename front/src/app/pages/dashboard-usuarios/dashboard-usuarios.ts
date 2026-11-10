@@ -5,12 +5,14 @@ import { Usuario } from '../../core/models/usuario';
 import { AdminService } from '../../core/services/admin.service';
 import { ModalService } from '../../core/services/modal.service';
 import { correoCom } from '../../core/validadores';
+import { ResaltarDirective } from '../../shared/directivas/resaltar.directive';
 import { InicialesPipe } from '../../shared/pipes/iniciales.pipe';
 import { SoloActivosDirective } from '../../shared/directivas/solo-activos.directive';
+import { TooltipDirective } from '../../shared/directivas/tooltip.directive';
 
 @Component({
   selector: 'app-dashboard-usuarios',
-  imports: [ReactiveFormsModule, InicialesPipe, SoloActivosDirective],
+  imports: [ReactiveFormsModule, InicialesPipe, SoloActivosDirective, ResaltarDirective, TooltipDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard-usuarios.html',
   styleUrl: './dashboard-usuarios.scss',

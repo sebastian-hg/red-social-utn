@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Publicacion } from '../../core/models/publicacion';
@@ -7,11 +6,12 @@ import { PublicacionesService } from '../../core/services/publicaciones.service'
 import { Avatar } from '../../shared/avatar/avatar';
 import { Comentarios } from '../../shared/comentarios/comentarios';
 import { Icon } from '../../shared/icon/icon';
+import { FechaCortaPipe } from '../../shared/pipes/fecha-corta.pipe';
 import { PublicacionCard } from '../../shared/publicacion-card/publicacion-card';
 
 @Component({
   selector: 'app-mi-perfil',
-  imports: [RouterLink, DatePipe, Avatar, Icon, PublicacionCard, Comentarios],
+  imports: [RouterLink, Avatar, Icon, FechaCortaPipe, PublicacionCard, Comentarios],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './mi-perfil.html',
   styleUrl: './mi-perfil.scss',

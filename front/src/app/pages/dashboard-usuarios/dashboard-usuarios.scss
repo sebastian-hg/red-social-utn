@@ -22,7 +22,7 @@
 .datos-usuario strong { color: #172033; overflow-wrap: anywhere; white-space: normal; }
 .datos-usuario small { color: #64748b; overflow-wrap: anywhere; margin-top: 2px; }
 .perfil { color: #9a3412; font-size: .72rem; text-transform: uppercase; font-weight: 800; margin-top: 3px; }
-.estado { color: #15803d; font-weight: 700; white-space: nowrap; }
+.estado { color: #15803d; font-weight: 700; white-space: nowrap; padding: 4px 8px; border-radius: 999px; }
 .estado.inactivo { color: #b91c1c; }
 .avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #ffedd5; color: #c2410c; font-weight: 800; }
 .listado .btn-ghost { color: #334155; border-color: #cbd5e1; min-width: 110px; }

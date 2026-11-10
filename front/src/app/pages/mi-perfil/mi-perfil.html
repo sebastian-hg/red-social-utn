@@ -25,11 +25,11 @@
         <li><app-icon nombre="correo" [tamano]="16" /> {{ u.correo }}</li>
         <li>
           <app-icon nombre="torta" [tamano]="16" />
-          {{ u.fechaNacimiento | date: "d 'de' MMMM 'de' y" : 'UTC' }} · {{ edad() }} años
+          {{ u.fechaNacimiento | fechaCorta }} · {{ edad() }} años
         </li>
         <li>
           <app-icon nombre="calendario" [tamano]="16" />
-          Se unió en {{ u.createdAt | date: "MMMM 'de' y" }}
+          Se unió el {{ u.createdAt | fechaCorta }}
         </li>
       </ul>
       <p class="contador"><strong>{{ totalPublicaciones() }}</strong> publicaciones</p>
