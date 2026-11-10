@@ -4,13 +4,20 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## Development server
 
-To start a local development server, run:
+Start the backend in one terminal:
 
 ```bash
-ng serve
+cd ../back
+npm run start:dev
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Then start the frontend in another terminal:
+
+```bash
+npm run start-local
+```
+
+This configures the frontend to use `http://localhost:3000/api`. Open `http://localhost:4200/` in your browser. The application automatically reloads whenever you modify source files.
 
 ## Code scaffolding
 

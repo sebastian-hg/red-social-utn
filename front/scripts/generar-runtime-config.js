@@ -4,7 +4,10 @@ const path = require('node:path');
 const apiUrl = (process.env.ARENA_API_URL || '').trim().replace(/\/+$/, '');
 const destino = path.join(__dirname, '..', 'public', 'runtime-config.js');
 
-const apiUrlConfigurada = apiUrl || (process.env.npm_lifecycle_event === 'start' ? 'http://localhost:3000' : '');
+const esInicioLocal = ['prestart', 'start', 'prestart-local', 'start-local'].includes(
+  process.env.npm_lifecycle_event,
+);
+const apiUrlConfigurada = apiUrl || (esInicioLocal ? 'http://localhost:3000' : '');
 
 if (!apiUrlConfigurada) {
   console.error('ARENA_API_URL no está configurada. Ejemplo: https://arena-back.onrender.com');

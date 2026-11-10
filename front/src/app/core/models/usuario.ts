@@ -18,5 +18,6 @@ export interface Usuario {
 export interface RespuestaAuth {
   mensaje: string;
   usuario: Usuario;
-  token?: string;
+  iat: number;
+  exp: number;
 }

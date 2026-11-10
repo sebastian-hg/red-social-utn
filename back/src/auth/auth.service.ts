@@ -68,9 +68,16 @@ export class AuthService {
     return usuario.toJSON();
   }
 
-  /** Emite un token nuevo con el mismo payload y 15 minutos de vigencia. */
-  refrescar(payload: PayloadJwt) {
-    return this.jwtService.signAsync(payload);
+  /** Emite un token nuevo con el mismo payload y devuelve su vencimiento. */
+  async refrescar(payload: PayloadJwt) {
+    const { sub, correo, nombreUsuario, perfil } = payload;
+    const token = await this.jwtService.signAsync({
+      sub,
+      correo,
+      nombreUsuario,
+      perfil,
+    });
+    return { token, ...this.extraerFechas(token) };
   }
 
   private async sesion(usuario: UsuarioDocument) {
@@ -80,9 +87,23 @@ export class AuthService {
       nombreUsuario: usuario.nombreUsuario,
       perfil: usuario.perfil,
     };
+    const token = await this.jwtService.signAsync(payload);
     return {
       usuario: usuario.toJSON(),
-      token: await this.jwtService.signAsync(payload),
+      token,
+      ...this.extraerFechas(token),
     };
+  }
+
+  private extraerFechas(token: string): { iat: number; exp: number } {
+    const payload = this.jwtService.decode<{ iat?: unknown; exp?: unknown }>(token);
+    if (
+      !payload ||
+      typeof payload.iat !== 'number' ||
+      typeof payload.exp !== 'number'
+    ) {
+      throw new Error('El token emitido no contiene sus fechas de emisión y vencimiento');
+    }
+    return { iat: payload.iat, exp: payload.exp };
   }
 }

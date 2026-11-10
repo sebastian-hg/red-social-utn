@@ -4,10 +4,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ModalService } from './modal.service';
-import { environment } from '../../../environments/environment';
 
-const DURACION_SESION_MS = environment.minutosSesion * 60 * 1000;
-const AVISO_EN_MS = environment.minutosAvisoSesion * 60 * 1000;
 const DURACION_MINIMA_CARGA = 800;
 
 @Injectable({ providedIn: 'root' })
@@ -23,6 +20,7 @@ export class SesionService {
 
   constructor() {
     effect(() => {
+      this.auth.inicioSesionToken();
       this.auth.vencimientoSesion();
       this.programar();
     });
@@ -55,14 +53,16 @@ export class SesionService {
   private programar(): void {
     this.temporizadores.forEach(clearTimeout);
     this.temporizadores = [];
+    const inicio = this.auth.inicioSesionToken();
     const vence = this.auth.vencimiento();
-    if (!vence || !this.auth.logueado()) return;
+    if (inicio === null || vence === null || !this.auth.logueado()) return;
     this.ofertaAbierta = false;
 
     const restante = vence - Date.now();
+    const aviso = inicio + (vence - inicio) / 2;
     this.temporizadores.push(
-      setTimeout(() => this.ofrecerExtender(), Math.max(DURACION_SESION_MS - AVISO_EN_MS, 0)),
-      setTimeout(() => this.expirar(`Pasaron ${environment.minutosSesion} minutos sin extender la sesión.`), restante),
+      setTimeout(() => this.ofrecerExtender(), Math.max(aviso - Date.now(), 0)),
+      setTimeout(() => this.expirar('Tu sesión venció. Volvé a iniciar sesión para continuar.'), restante),
     );
   }
 
@@ -72,7 +72,7 @@ export class SesionService {
     const extender = await this.modal.abrir({
       tipo: 'confirmar',
       titulo: 'Tu sesión está por vencer',
-      mensaje: `Quedan ${environment.minutosSesion - environment.minutosAvisoSesion} minutos de sesión. ¿Querés extenderla para seguir conectado?`,
+      mensaje: '¿Querés extenderla para seguir conectado?',
       textoAceptar: 'Extender sesión',
       textoCancelar: 'Ahora no',
     });
@@ -81,7 +81,7 @@ export class SesionService {
       this.modal.abrir({
         tipo: 'exito',
         titulo: 'Sesión extendida',
-        mensaje: `Tenés ${environment.minutosSesion} minutos más. ¡A seguir jugando!`,
+        mensaje: 'Tu sesión fue extendida. ¡A seguir jugando!',
       }),
     );
   }

@@ -4,17 +4,16 @@ import { Observable, finalize, map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { RespuestaAuth, Usuario } from '../models/usuario';
 
-const DURACION_SESION_MS =
-  environment.minutosSesion * 60 * 1000;
-
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/auth`;
 
   private readonly _usuario = signal<Usuario | null>(null);
+  private readonly _inicioSesionToken = signal<number | null>(null);
   private readonly _vencimiento = signal<number | null>(null);
   readonly usuario = this._usuario.asReadonly();
+  readonly inicioSesionToken = this._inicioSesionToken.asReadonly();
   readonly vencimientoSesion = this._vencimiento.asReadonly();
   readonly logueado = computed(() => this._usuario() !== null);
   readonly esAdmin = computed(() => this._usuario()?.perfil === 'administrador');
@@ -22,26 +21,28 @@ export class AuthService {
   registro(datos: FormData): Observable<RespuestaAuth> {
     return this.http
       .post<RespuestaAuth>(`${this.url}/registro`, datos)
-      .pipe(tap((respuesta) => this.iniciarSesion(respuesta.usuario)));
+      .pipe(tap(({ usuario, iat, exp }) => this.iniciarSesion(usuario, iat, exp)));
   }
 
   login(usuario: string, password: string): Observable<RespuestaAuth> {
     return this.http
       .post<RespuestaAuth>(`${this.url}/login`, { usuario, password })
-      .pipe(tap((respuesta) => this.iniciarSesion(respuesta.usuario)));
+      .pipe(tap(({ usuario, iat, exp }) => this.iniciarSesion(usuario, iat, exp)));
   }
 
   autorizar(): Observable<Usuario> {
     return this.http
-      .post<{ usuario: Usuario }>(`${this.url}/autorizar`, {})
+      .post<{ usuario: Usuario; iat: number; exp: number }>(`${this.url}/autorizar`, {})
       .pipe(
+        tap(({ usuario, iat, exp }) => this.iniciarSesion(usuario, iat, exp)),
         map(({ usuario }) => usuario),
-        tap((usuario) => this.iniciarSesion(usuario)),
       );
   }
 
-  refrescar(): Observable<void> {
-    return this.http.post<void>(`${this.url}/refrescar`, {}).pipe(tap(() => this.programarSesion()));
+  refrescar(): Observable<{ iat: number; exp: number }> {
+    return this.http
+      .post<{ iat: number; exp: number }>(`${this.url}/refrescar`, {})
+      .pipe(tap(({ iat, exp }) => this.programarSesion(iat, exp)));
   }
 
   logout(): Observable<void> {
@@ -56,16 +57,18 @@ export class AuthService {
     return this._vencimiento();
   }
 
-  private iniciarSesion(usuario: Usuario): void {
+  private iniciarSesion(usuario: Usuario, iat: number, exp: number): void {
     this._usuario.set(usuario);
-    this.programarSesion();
+    this.programarSesion(iat, exp);
   }
 
-  private programarSesion(): void {
-    this._vencimiento.set(Date.now() + DURACION_SESION_MS);
+  private programarSesion(iat: number, exp: number): void {
+    this._inicioSesionToken.set(iat * 1000);
+    this._vencimiento.set(exp * 1000);
   }
 
   private limpiarSesion(): void {
+    this._inicioSesionToken.set(null);
     this._vencimiento.set(null);
     this._usuario.set(null);
   }

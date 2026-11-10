@@ -8,6 +8,11 @@ export interface PayloadJwt {
   perfil: Perfil;
 }
 
+export interface PayloadJwtVerificado extends PayloadJwt {
+  iat: number;
+  exp: number;
+}
+
 export const DURACION_TOKEN = '2m';
 export const NOMBRE_COOKIE_AUTH = 'arena_token';
 

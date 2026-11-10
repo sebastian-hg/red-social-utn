@@ -18,7 +18,7 @@ import { LoginDto } from './dto/login.dto.js';
 import { RegistroDto } from './dto/registro.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import { NOMBRE_COOKIE_AUTH } from './payload-jwt.js';
-import type { PayloadJwt } from './payload-jwt.js';
+import type { PayloadJwtVerificado } from './payload-jwt.js';
 import { UsuarioActual } from './usuario-actual.decorator.js';
 import { DURACION_TOKEN_MS } from './payload-jwt.js';
 
@@ -35,7 +35,12 @@ export class AuthController {
   ) {
     const sesion = await this.authService.registro(dto, imagen);
     this.establecerCookie(response, sesion.token);
-    return { mensaje: 'Usuario registrado correctamente', usuario: sesion.usuario };
+    return {
+      mensaje: 'Usuario registrado correctamente',
+      usuario: sesion.usuario,
+      iat: sesion.iat,
+      exp: sesion.exp,
+    };
   }
 
   @Post('login')
@@ -46,27 +51,32 @@ export class AuthController {
   ) {
     const sesion = await this.authService.login(dto);
     this.establecerCookie(response, sesion.token);
-    return { mensaje: 'Inicio de sesión exitoso', usuario: sesion.usuario };
+    return {
+      mensaje: 'Inicio de sesión exitoso',
+      usuario: sesion.usuario,
+      iat: sesion.iat,
+      exp: sesion.exp,
+    };
   }
 
   @Post('autorizar')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  async autorizar(@UsuarioActual() payload: PayloadJwt) {
+  async autorizar(@UsuarioActual() payload: PayloadJwtVerificado) {
     const usuario = await this.authService.autorizar(payload);
-    return { mensaje: 'Token válido', usuario };
+    return { mensaje: 'Token válido', usuario, iat: payload.iat, exp: payload.exp };
   }
 
   @Post('refrescar')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   async refrescar(
-    @UsuarioActual() payload: PayloadJwt,
+    @UsuarioActual() payload: PayloadJwtVerificado,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const token = await this.authService.refrescar(payload);
-    this.establecerCookie(response, token);
-    return { mensaje: 'Sesión extendida' };
+    const sesion = await this.authService.refrescar(payload);
+    this.establecerCookie(response, sesion.token);
+    return { mensaje: 'Sesión extendida', iat: sesion.iat, exp: sesion.exp };
   }
 
   @Post('logout')
