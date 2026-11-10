@@ -43,7 +43,11 @@ export class SesionService {
       await firstValueFrom(this.auth.autorizar());
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 401) {
-        this.expirar('Tu sesión venció. Volvé a iniciar sesión para continuar.');
+        if (error.error?.message === 'Falta el token de autenticación') {
+          this.auth.limpiarSesionLocal();
+        } else {
+          this.expirar('Tu sesión venció. Volvé a iniciar sesión para continuar.');
+        }
       }
     }
     await espera;
