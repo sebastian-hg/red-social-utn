@@ -62,11 +62,9 @@ export class SesionService {
     if (inicio === null || vence === null || !this.auth.logueado()) return;
     this.ofertaAbierta = false;
 
-    const restante = vence - Date.now();
     const aviso = inicio + (vence - inicio) / 2;
     this.temporizadores.push(
       setTimeout(() => this.ofrecerExtender(), Math.max(aviso - Date.now(), 0)),
-      setTimeout(() => this.expirar('Tu sesión venció. Volvé a iniciar sesión para continuar.'), restante),
     );
   }
 

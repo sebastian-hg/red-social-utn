@@ -5,7 +5,7 @@ import { SesionService } from './services/sesion.service';
 
 const SIN_REDIRECCION = ['/auth/login', '/auth/registro', '/auth/autorizar', '/auth/logout'];
 
-/** Adjunta la cookie de sesión y expira el estado ante respuestas 401. */
+/** Adjunta la cookie y redirige al login si una petición protegida responde 401. */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const injector = inject(Injector);
   const peticion = req.clone({ withCredentials: true });
@@ -17,7 +17,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         error.status === 401 &&
         !SIN_REDIRECCION.some((ruta) => req.url.endsWith(ruta))
       ) {
-        injector.get(SesionService).expirar();
+        injector.get(SesionService).expirar(
+          'Error 401: tu sesión venció o ya no es válida. Iniciá sesión nuevamente para generar un token nuevo.',
+        );
       }
       return throwError(() => error);
     }),

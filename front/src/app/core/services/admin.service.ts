@@ -7,6 +7,7 @@ import { Usuario } from '../models/usuario';
 export interface DatoGrafico {
   nombre?: string;
   titulo?: string;
+  fecha?: string;
   cantidad: number;
 }
 
@@ -35,8 +36,8 @@ export class AdminService {
     return this.http.get<DatoGrafico[]>(`${this.api}/estadisticas/publicaciones-por-usuario`, { params: { desde, hasta } });
   }
 
-  comentarios(desde: string, hasta: string): Observable<DatoGrafico[]> {
-    return this.http.get<DatoGrafico[]>(`${this.api}/estadisticas/comentarios`, { params: { desde, hasta } });
+  comentariosPorDia(desde: string, hasta: string): Observable<DatoGrafico[]> {
+    return this.http.get<DatoGrafico[]>(`${this.api}/estadisticas/comentarios-por-dia`, { params: { desde, hasta } });
   }
 
   comentariosPorPublicacion(desde: string, hasta: string): Observable<DatoGrafico[]> {

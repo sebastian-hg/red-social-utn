@@ -41,16 +41,25 @@ export class EstadisticasController {
     ]);
   }
 
-  @Get('comentarios')
-  comentariosPorPeriodo(@Query('desde') desde: string, @Query('hasta') hasta: string, @UsuarioActual() usuario: PayloadJwt) {
+  @Get('comentarios-por-dia')
+  comentariosPorDia(@Query('desde') desde: string, @Query('hasta') hasta: string, @UsuarioActual() usuario: PayloadJwt) {
     this.validar(usuario);
     return this.comentarios.aggregate([
       { $match: { createdAt: this.rango(desde, hasta), activa: { $ne: false } } },
-      { $group: { _id: '$autor', cantidad: { $sum: 1 } } },
-      { $lookup: { from: 'usuarios', localField: '_id', foreignField: '_id', as: 'usuario' } },
-      { $unwind: '$usuario' },
-      { $project: { _id: 0, nombre: { $concat: ['$usuario.nombre', ' ', '$usuario.apellido'] }, cantidad: 1 } },
-      { $sort: { cantidad: -1 } },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: '%Y-%m-%d',
+              date: '$createdAt',
+              timezone: 'UTC',
+            },
+          },
+          cantidad: { $sum: 1 },
+        },
+      },
+      { $project: { _id: 0, fecha: '$_id', cantidad: 1 } },
+      { $sort: { fecha: 1 } },
     ]);
   }
 

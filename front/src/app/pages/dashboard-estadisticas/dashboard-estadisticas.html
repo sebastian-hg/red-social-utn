@@ -1,38 +1,129 @@
 <section class="estadisticas">
-  <header><span class="eyebrow">Administración</span><h1>Estadísticas</h1></header>
-  <p>Período seleccionado: {{ formatoInput(desde) }} — {{ formatoInput(hasta) }}</p>
+  <header>
+    <span class="eyebrow">Administración</span>
+    <h1>Estadísticas</h1>
+    <p>Elegí un período para consultar la actividad de Arena.</p>
+  </header>
+
   <form class="filtros" (ngSubmit)="cargar()">
-    <label>Desde<input type="text" [value]="formatoInput(desde)" (blur)="setDesde($event)" name="desde" placeholder="dd/mm/aaaa" maxlength="10"></label>
-    <label>Hasta<input type="text" [value]="formatoInput(hasta)" (blur)="setHasta($event)" name="hasta" placeholder="dd/mm/aaaa" maxlength="10"></label>
+    <label>
+      Desde
+      <input type="text" [value]="formatoInput(desde)" (blur)="setDesde($event)" name="desde"
+        placeholder="dd/mm/aaaa" maxlength="10">
+    </label>
+    <label>
+      Hasta
+      <input type="text" [value]="formatoInput(hasta)" (blur)="setHasta($event)" name="hasta"
+        placeholder="dd/mm/aaaa" maxlength="10">
+    </label>
     <button class="btn btn-primary">Actualizar gráficos</button>
   </form>
+
+  @if (error()) {
+    <p class="error" role="alert">No se pudieron cargar todas las estadísticas. Revisá tu conexión e intentá actualizar.</p>
+  }
+
   <nav class="tabs" aria-label="Tipos de estadísticas">
-    <button type="button" [class.activa]="tabActiva() === 'publicaciones'" (click)="seleccionar('publicaciones')">Publicaciones</button>
-    <button type="button" [class.activa]="tabActiva() === 'comentarios'" (click)="seleccionar('comentarios')">Comentarios por usuario</button>
-    <button type="button" [class.activa]="tabActiva() === 'por-publicacion'" (click)="seleccionar('por-publicacion')">Comentarios por publicación</button>
+    <button type="button" [class.activa]="tabActiva() === 'publicaciones'"
+      (click)="seleccionar('publicaciones')">Publicaciones por usuario</button>
+    <button type="button" [class.activa]="tabActiva() === 'comentarios-por-dia'"
+      (click)="seleccionar('comentarios-por-dia')">Comentarios por día</button>
+    <button type="button" [class.activa]="tabActiva() === 'por-publicacion'"
+      (click)="seleccionar('por-publicacion')">Comentarios por publicación</button>
   </nav>
 
   <article class="card grafico-activo">
     @switch (tabActiva()) {
       @case ('publicaciones') {
-        <h2>Publicaciones realizadas por usuario</h2>
-        @if (!publicaciones().length) { <p class="sin-datos">No hay publicaciones en el período seleccionado.</p> }
-        @for (dato of publicaciones(); track dato.nombre) {
-          <div class="fila-barra"><span>{{ dato.nombre }}</span><div class="barra"><i [style.width.%]="dato.cantidad / maximo(publicaciones()) * 100"></i></div><b>{{ dato.cantidad }}</b></div>
+        <div class="titulo-grafico">
+          <div>
+            <span class="tipo-grafico">Gráfico de barras</span>
+            <h2>Publicaciones realizadas por usuario</h2>
+          </div>
+          <span class="periodo">{{ formatoInput(desde) }} — {{ formatoInput(hasta) }}</span>
+        </div>
+        @if (!publicaciones().length) {
+          <p class="sin-datos">No hay publicaciones en el período seleccionado.</p>
+        } @else {
+          <div class="barras">
+            @for (dato of publicaciones(); track dato.nombre) {
+              <div class="fila-barra">
+                <span>{{ dato.nombre }}</span>
+                <div class="barra" role="meter" [attr.aria-label]="'Publicaciones de ' + dato.nombre"
+                  aria-valuemin="0" [attr.aria-valuemax]="maximo(publicaciones())" [attr.aria-valuenow]="dato.cantidad">
+                  <i [style.width.%]="dato.cantidad / maximo(publicaciones()) * 100"></i>
+                </div>
+                <b>{{ dato.cantidad }}</b>
+              </div>
+            }
+          </div>
         }
       }
-      @case ('comentarios') {
-        <h2>Comentarios realizados por usuario</h2>
-        @if (!comentarios().length) { <p class="sin-datos">No hay comentarios en el período seleccionado.</p> }
-        @for (dato of comentarios(); track dato.nombre) {
-          <div class="fila-barra"><span>{{ dato.nombre }}</span><div class="barra comentarios"><i [style.width.%]="dato.cantidad / maximo(comentarios()) * 100"></i></div><b>{{ dato.cantidad }}</b></div>
+      @case ('comentarios-por-dia') {
+        <div class="titulo-grafico">
+          <div>
+            <span class="tipo-grafico">Gráfico lineal</span>
+            <h2>Comentarios realizados por día</h2>
+          </div>
+          <div class="resumen">
+            <strong>{{ totalComentariosPorDia() }}</strong>
+            <span>comentarios en el período</span>
+          </div>
+        </div>
+        @if (!comentariosPorDia().length) {
+          <p class="sin-datos">No hay comentarios en el período seleccionado.</p>
+        } @else {
+          <div class="grafico-lineal">
+            <svg viewBox="0 0 100 52" preserveAspectRatio="none" role="img"
+              [attr.aria-label]="'Comentarios por día entre ' + formatoInput(desde) + ' y ' + formatoInput(hasta)">
+              <line x1="5" y1="7" x2="95" y2="7"></line>
+              <line x1="5" y1="26" x2="95" y2="26"></line>
+              <line x1="5" y1="45" x2="95" y2="45"></line>
+              <polyline [attr.points]="puntosLinea()"></polyline>
+              @for (punto of puntosComentarios(); track punto.fecha) {
+                <circle [attr.cx]="punto.x" [attr.cy]="punto.y" r="1.2">
+                  <title>{{ punto.etiqueta }}: {{ punto.cantidad }} comentarios</title>
+                </circle>
+              }
+            </svg>
+            <div class="eje-fechas">
+              <span>{{ formatoInput(desde) }}</span>
+              <span>{{ formatoInput(hasta) }}</span>
+            </div>
+          </div>
+          <div class="resumen-diario" aria-label="Detalle de comentarios diarios">
+            @for (dia of diasComentarios(); track dia.fecha) {
+              <span><time [attr.datetime]="dia.fecha">{{ dia.etiqueta }}</time><b>{{ dia.cantidad }}</b></span>
+            }
+          </div>
         }
       }
       @case ('por-publicacion') {
-        <h2>Comentarios en cada publicación</h2>
-        @if (!comentariosPublicacion().length) { <p class="sin-datos">No hay comentarios por publicación en el período seleccionado.</p> }
-        @for (dato of comentariosPublicacion(); track dato.titulo) {
-          <div class="fila-barra"><span title="{{ dato.titulo }}">{{ dato.titulo ?? 'Publicación' | truncar:42 }}</span><div class="barra publicaciones"><i [style.width.%]="dato.cantidad / maximo(comentariosPublicacion()) * 100"></i></div><b>{{ dato.cantidad }}</b></div>
+        <div class="titulo-grafico">
+          <div>
+            <span class="tipo-grafico">Gráfico de torta</span>
+            <h2>Comentarios por publicación</h2>
+          </div>
+          <span class="periodo">{{ formatoInput(desde) }} — {{ formatoInput(hasta) }}</span>
+        </div>
+        @if (!comentariosPublicacion().length) {
+          <p class="sin-datos">No hay comentarios por publicación en el período seleccionado.</p>
+        } @else {
+          <div class="contenido-torta">
+            <div class="grafico-torta" [style.background]="gradienteTorta()" role="img"
+              aria-label="Distribución de comentarios por publicación">
+              <span><strong>{{ comentariosPublicacion().length }}</strong><small>publicaciones</small></span>
+            </div>
+            <div class="leyenda">
+              @for (segmento of segmentosTorta(); track $index) {
+                <div class="item-leyenda">
+                  <i [style.backgroundColor]="segmento.color"></i>
+                  <span [title]="segmento.titulo">{{ segmento.titulo | truncar:42 }}</span>
+                  <b>{{ segmento.cantidad }} <small>({{ segmento.porcentaje | number:'1.0-1' }}%)</small></b>
+                </div>
+              }
+            </div>
+          </div>
         }
       }
     }
