@@ -66,7 +66,7 @@ export class DashboardEstadisticas {
     const maximo = Math.max(...dias.map(({ cantidad }) => cantidad), 1);
     return dias.map((dia, indice) => ({
       ...dia,
-      x: dias.length === 1 ? 59 : 15 + (indice * 90) / (dias.length - 1),
+      x: dias.length === 1 ? 60 : 16 + (indice * 88) / (dias.length - 1),
       y: 44 - (dia.cantidad / maximo) * 36,
     }));
   });
@@ -75,12 +75,7 @@ export class DashboardEstadisticas {
     const valores = [...new Set([maximo, Math.ceil(maximo / 2), 0])];
     return valores.map((valor) => ({ valor, y: 44 - (valor / maximo) * 36 }));
   });
-  protected readonly marcasEjeX = computed(() => {
-    const puntos = this.puntosComentarios();
-    if (puntos.length <= 7) return puntos;
-    const paso = Math.ceil((puntos.length - 1) / 6);
-    return puntos.filter((_, indice) => indice % paso === 0 || indice === puntos.length - 1);
-  });
+  protected readonly marcasEjeX = this.puntosComentarios;
   protected readonly puntosLinea = computed(() =>
     this.puntosComentarios().map(({ x, y }) => `${x},${y}`).join(' '),
   );

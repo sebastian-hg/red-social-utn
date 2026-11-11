@@ -75,7 +75,7 @@
         } @else {
           <div class="grafico-lineal">
             <p class="etiqueta-eje etiqueta-y">Cantidad de comentarios</p>
-            <svg viewBox="0 0 110 58" preserveAspectRatio="none" role="img"
+            <svg viewBox="0 0 110 62" preserveAspectRatio="none" role="img"
               [attr.aria-label]="'Comentarios por día entre ' + formatoInput(desde) + ' y ' + formatoInput(hasta)">
               @for (marca of marcasEjeY(); track marca.valor) {
                 <line class="cuadricula" x1="14" [attr.y1]="marca.y" x2="105" [attr.y2]="marca.y"></line>
@@ -91,15 +91,11 @@
               }
               @for (marca of marcasEjeX(); track marca.fecha) {
                 <line class="marca-x" [attr.x1]="marca.x" y1="44" [attr.x2]="marca.x" y2="45"></line>
-                <text class="etiqueta-x" [attr.x]="marca.x" y="50" text-anchor="middle">{{ marca.etiqueta }}</text>
+                <text class="etiqueta-x" [attr.x]="marca.x" y="51"
+                  [attr.transform]="'rotate(-90 ' + marca.x + ' 51)'" text-anchor="end">{{ marca.etiqueta }}</text>
               }
             </svg>
-            <p class="etiqueta-eje etiqueta-x-titulo">Días</p>
-          </div>
-          <div class="resumen-diario" aria-label="Detalle de comentarios diarios">
-            @for (dia of diasComentarios(); track dia.fecha) {
-              <span><time [attr.datetime]="dia.fecha">{{ dia.etiqueta }}</time><b>{{ dia.cantidad }}</b></span>
-            }
+            <p class="etiqueta-eje etiqueta-x-titulo">Días (fechas en vertical)</p>
           </div>
         }
       }

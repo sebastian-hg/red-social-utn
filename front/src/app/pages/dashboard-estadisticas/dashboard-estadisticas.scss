@@ -187,6 +187,7 @@
 
 .grafico-lineal {
   padding: 8px 4px 0;
+  overflow-x: auto;
 
   .etiqueta-eje {
     margin: 0;
@@ -247,30 +248,6 @@
     stroke: #2563eb;
     stroke-width: 2;
     vector-effect: non-scaling-stroke;
-  }
-}
-
-.resumen-diario {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
-  gap: 8px;
-  max-height: 150px;
-  overflow: auto;
-  margin-top: 20px;
-  padding: 8px;
-  border-radius: 10px;
-  background: #f8fafc;
-
-  > span {
-    display: flex;
-    justify-content: space-between;
-    gap: 6px;
-    color: #475569;
-    font-size: 0.78rem;
-  }
-
-  b {
-    color: #1d4ed8;
   }
 }
 
