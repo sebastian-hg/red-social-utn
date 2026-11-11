@@ -17,8 +17,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         error.status === 401 &&
         !SIN_REDIRECCION.some((ruta) => req.url.endsWith(ruta))
       ) {
+        const motivo = error.error?.message || 'Falta el token de autenticación';
         injector.get(SesionService).expirar(
-          'Error 401: tu sesión venció o ya no es válida. Iniciá sesión nuevamente para generar un token nuevo.',
+          `${motivo} - error 401. Iniciá sesión nuevamente para generar un token nuevo.`,
         );
       }
       return throwError(() => error);
