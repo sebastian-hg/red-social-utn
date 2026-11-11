@@ -74,22 +74,27 @@
           <p class="sin-datos">No hay comentarios en el período seleccionado.</p>
         } @else {
           <div class="grafico-lineal">
-            <svg viewBox="0 0 100 52" preserveAspectRatio="none" role="img"
+            <p class="etiqueta-eje etiqueta-y">Cantidad de comentarios</p>
+            <svg viewBox="0 0 110 58" preserveAspectRatio="none" role="img"
               [attr.aria-label]="'Comentarios por día entre ' + formatoInput(desde) + ' y ' + formatoInput(hasta)">
-              <line x1="5" y1="7" x2="95" y2="7"></line>
-              <line x1="5" y1="26" x2="95" y2="26"></line>
-              <line x1="5" y1="45" x2="95" y2="45"></line>
+              @for (marca of marcasEjeY(); track marca.valor) {
+                <line class="cuadricula" x1="14" [attr.y1]="marca.y" x2="105" [attr.y2]="marca.y"></line>
+                <text class="marca-y" x="11" [attr.y]="marca.y + 1" text-anchor="end">{{ marca.valor }}</text>
+              }
+              <line class="eje" x1="14" y1="8" x2="14" y2="44"></line>
+              <line class="eje" x1="14" y1="44" x2="105" y2="44"></line>
               <polyline [attr.points]="puntosLinea()"></polyline>
               @for (punto of puntosComentarios(); track punto.fecha) {
                 <circle [attr.cx]="punto.x" [attr.cy]="punto.y" r="1.2">
                   <title>{{ punto.etiqueta }}: {{ punto.cantidad }} comentarios</title>
                 </circle>
               }
+              @for (marca of marcasEjeX(); track marca.fecha) {
+                <line class="marca-x" [attr.x1]="marca.x" y1="44" [attr.x2]="marca.x" y2="45"></line>
+                <text class="etiqueta-x" [attr.x]="marca.x" y="50" text-anchor="middle">{{ marca.etiqueta }}</text>
+              }
             </svg>
-            <div class="eje-fechas">
-              <span>{{ formatoInput(desde) }}</span>
-              <span>{{ formatoInput(hasta) }}</span>
-            </div>
+            <p class="etiqueta-eje etiqueta-x-titulo">Días</p>
           </div>
           <div class="resumen-diario" aria-label="Detalle de comentarios diarios">
             @for (dia of diasComentarios(); track dia.fecha) {

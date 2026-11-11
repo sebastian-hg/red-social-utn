@@ -188,17 +188,49 @@
 .grafico-lineal {
   padding: 8px 4px 0;
 
+  .etiqueta-eje {
+    margin: 0;
+    color: #475569;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .etiqueta-y {
+    margin-left: 34px;
+  }
+
+  .etiqueta-x-titulo {
+    text-align: center;
+  }
+
   svg {
     display: block;
     width: 100%;
-    height: clamp(180px, 30vw, 270px);
-    overflow: visible;
+    height: clamp(220px, 34vw, 300px);
   }
 
-  line {
+  .cuadricula {
     stroke: #e2e8f0;
+    stroke-width: 0.35;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .eje {
+    stroke: #64748b;
+    stroke-width: 0.7;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .marca-x {
+    stroke: #64748b;
     stroke-width: 0.5;
     vector-effect: non-scaling-stroke;
+  }
+
+  .marca-y,
+  .etiqueta-x {
+    fill: #475569;
+    font-size: 2.7px;
   }
 
   polyline {
@@ -216,14 +248,6 @@
     stroke-width: 2;
     vector-effect: non-scaling-stroke;
   }
-}
-
-.eje-fechas {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-  color: #64748b;
-  font-size: 0.8rem;
 }
 
 .resumen-diario {

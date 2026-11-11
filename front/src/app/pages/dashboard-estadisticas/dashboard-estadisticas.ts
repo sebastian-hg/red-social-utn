@@ -12,6 +12,11 @@ interface PuntoLinea {
   y: number;
 }
 
+interface MarcaEjeY {
+  valor: number;
+  y: number;
+}
+
 @Component({
   selector: 'app-dashboard-estadisticas',
   imports: [FormsModule, DecimalPipe, TruncarPipe],
@@ -21,7 +26,7 @@ interface PuntoLinea {
 })
 export class DashboardEstadisticas {
   private readonly admin = inject(AdminService);
-  protected desde = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+  protected desde = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
   protected hasta = new Date().toISOString().slice(0, 10);
   protected publicaciones = signal<DatoGrafico[]>([]);
   protected comentariosPorDia = signal<DatoGrafico[]>([]);
@@ -61,9 +66,20 @@ export class DashboardEstadisticas {
     const maximo = Math.max(...dias.map(({ cantidad }) => cantidad), 1);
     return dias.map((dia, indice) => ({
       ...dia,
-      x: dias.length === 1 ? 50 : 5 + (indice * 90) / (dias.length - 1),
-      y: 45 - (dia.cantidad / maximo) * 38,
+      x: dias.length === 1 ? 59 : 15 + (indice * 90) / (dias.length - 1),
+      y: 44 - (dia.cantidad / maximo) * 36,
     }));
+  });
+  protected readonly marcasEjeY = computed<MarcaEjeY[]>(() => {
+    const maximo = Math.max(...this.diasComentarios().map(({ cantidad }) => cantidad), 1);
+    const valores = [...new Set([maximo, Math.ceil(maximo / 2), 0])];
+    return valores.map((valor) => ({ valor, y: 44 - (valor / maximo) * 36 }));
+  });
+  protected readonly marcasEjeX = computed(() => {
+    const puntos = this.puntosComentarios();
+    if (puntos.length <= 7) return puntos;
+    const paso = Math.ceil((puntos.length - 1) / 6);
+    return puntos.filter((_, indice) => indice % paso === 0 || indice === puntos.length - 1);
   });
   protected readonly puntosLinea = computed(() =>
     this.puntosComentarios().map(({ x, y }) => `${x},${y}`).join(' '),
