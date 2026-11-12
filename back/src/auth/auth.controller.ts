@@ -20,7 +20,8 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import { NOMBRE_COOKIE_AUTH } from './payload-jwt.js';
 import type { PayloadJwtVerificado } from './payload-jwt.js';
 import { UsuarioActual } from './usuario-actual.decorator.js';
-import { DURACION_TOKEN_MS } from './payload-jwt.js';
+
+const DURACION_COOKIE_AUTH_MS = 5 * 60 * 1000;
 
 @Controller('auth')
 export class AuthController {
@@ -92,7 +93,7 @@ export class AuthController {
   private establecerCookie(response: Response, token: string): void {
     response.cookie(NOMBRE_COOKIE_AUTH, token, {
       ...this.opcionesCookie(),
-      maxAge: DURACION_TOKEN_MS,
+      maxAge: DURACION_COOKIE_AUTH_MS,
     });
   }
 
