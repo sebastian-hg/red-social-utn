@@ -13,7 +13,7 @@ export interface PayloadJwtVerificado extends PayloadJwt {
   exp: number;
 }
 
-export const DURACION_TOKEN = '2m';
+export const DURACION_TOKEN = '30s';
 export const NOMBRE_COOKIE_AUTH = 'arena_token';
 
 const factoresDuracion = {
