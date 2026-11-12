@@ -21,7 +21,7 @@ import { NOMBRE_COOKIE_AUTH } from './payload-jwt.js';
 import type { PayloadJwtVerificado } from './payload-jwt.js';
 import { UsuarioActual } from './usuario-actual.decorator.js';
 
-const DURACION_COOKIE_AUTH_MS = 5 * 60 * 1000;
+const DURACION_COOKIE_AUTH_MS = 24 * 60 * 60 * 1000;
 
 @Controller('auth')
 export class AuthController {
